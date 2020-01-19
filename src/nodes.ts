@@ -1,3 +1,9 @@
+// Nodes
+export interface Node {
+  type: string;
+  token: Token;
+}
+
 export interface DiceRollNode {
   type: 'DiceRoll';
   count: number;
