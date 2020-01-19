@@ -1,57 +1,70 @@
-import { DiceNotationNode, DiceRollNode } from '../nodes';
-import { diceRoll, operator, constant } from '../objectConstructors';
+import {
+  DiceNotationNode,
+  DiceRollNode,
+  diceRollNode,
+  operatorNode,
+  constantNode,
+} from '../nodes';
 import lex from '../lexer';
 import tokenize from '../tokenize';
 
 describe('lexer', () => {
   const cases: [string, string, DiceNotationNode][] = [
-    ['single dice roll', '1d6', diceRoll(1, 6)],
+    ['single dice roll', '1d6', diceRollNode(1, 6)],
     [
       'adding a constant',
       '3d6 + 10',
-      operator('+', diceRoll(3, 6), constant(10)),
+      operatorNode('+', diceRollNode(3, 6), constantNode(10)),
     ],
     [
       'adding two dice',
       '3d6 + 10d4',
-      operator('+', diceRoll(3, 6), diceRoll(10, 4)),
+      operatorNode('+', diceRollNode(3, 6), diceRollNode(10, 4)),
     ],
     [
       'weird dice',
       '3d7 + 2d11',
-      operator('+', diceRoll(3, 7), diceRoll(2, 11)),
+      operatorNode('+', diceRollNode(3, 7), diceRollNode(2, 11)),
     ],
-    ['subtraction', '1d6 - 1d4', operator('-', diceRoll(1, 6), diceRoll(1, 4))],
+    [
+      'subtraction',
+      '1d6 - 1d4',
+      operatorNode('-', diceRollNode(1, 6), diceRollNode(1, 4)),
+    ],
     [
       'multiplication',
       '1d6 * 1d4',
-      operator('*', diceRoll(1, 6), diceRoll(1, 4)),
+      operatorNode('*', diceRollNode(1, 6), diceRollNode(1, 4)),
     ],
-    ['division', '1d6 / 1d4', operator('/', diceRoll(1, 6), diceRoll(1, 4))],
+    [
+      'division',
+      '1d6 / 1d4',
+      operatorNode('/', diceRollNode(1, 6), diceRollNode(1, 4)),
+    ],
     [
       'parenthesis',
       '(1d6 + 1d4) * 3d8',
-      operator(
+      operatorNode(
         '*',
-        operator('+', diceRoll(1, 6), diceRoll(1, 4)),
-        diceRoll(3, 8)
+        operatorNode('+', diceRollNode(1, 6), diceRollNode(1, 4)),
+        diceRollNode(3, 8)
       ),
     ],
     [
       'PEMDAS',
       '1d6 + 2d4 * 3d8 / 4d9 - 3d7',
-      operator(
+      operatorNode(
         '-',
-        operator(
+        operatorNode(
           '+',
-          diceRoll(1, 6),
-          operator(
+          diceRollNode(1, 6),
+          operatorNode(
             '/',
-            operator('*', diceRoll(2, 4), diceRoll(3, 8)),
-            diceRoll(4, 9)
+            operatorNode('*', diceRollNode(2, 4), diceRollNode(3, 8)),
+            diceRollNode(4, 9)
           )
         ),
-        diceRoll(3, 7)
+        diceRollNode(3, 7)
       ),
     ],
   ];
