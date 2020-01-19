@@ -4,19 +4,34 @@ import ParsingError from './ParsingError';
 function tokenize(notation: string): Token[] {
   const tokens: Token[] = [];
 
-  let currentDiceToken = '';
+  let currentToken = '';
 
-  function handleCurrentDiceToken(index: number) {
-    validateTokenIsDiceToken(currentDiceToken, notation, index);
-    const numbers = currentDiceToken.split('d').map(num => parseInt(num));
-    tokens.push({
-      type: TokenType.DiceRoll,
-      position: index - currentDiceToken.length,
-      content: currentDiceToken,
-      count: numbers[0],
-      numSides: numbers[1],
-    });
-    currentDiceToken = '';
+  function handletDiceOrConstant(index: number) {
+    if (isDiceToken(currentToken)) {
+      const numbers = currentToken.split('d').map(num => parseInt(num));
+      tokens.push({
+        type: TokenType.DiceRoll,
+        position: index - currentToken.length,
+        content: currentToken,
+        count: numbers[0],
+        numSides: numbers[1],
+      });
+    } else if (isConstantToken(currentToken)) {
+      tokens.push({
+        type: TokenType.Constant,
+        position: index - currentToken.length,
+        content: currentToken,
+        value: parseInt(currentToken),
+      });
+    } else {
+      throw new ParsingError(
+        'Unable to interpret dice roll token',
+        notation,
+        currentToken,
+        index
+      );
+    }
+    currentToken = '';
   }
 
   const validOperators = ['+', '-', '*', '/', '(', ')'];
@@ -52,21 +67,21 @@ function tokenize(notation: string): Token[] {
     const char = notation.charAt(i);
 
     if (char.match(/\d/)) {
-      currentDiceToken += char;
+      currentToken += char;
     } else if (char === 'd') {
-      validateTokenIsOnlyNumbers(currentDiceToken, notation, i);
-      currentDiceToken += char;
+      validateTokenIsOnlyNumbers(currentToken, notation, i);
+      currentToken += char;
     } else if (char === ' ') {
-      if (currentDiceToken) handleCurrentDiceToken(i);
+      if (currentToken) handletDiceOrConstant(i);
     } else if (validOperators.includes(char)) {
-      if (currentDiceToken) handleCurrentDiceToken(i);
+      if (currentToken) handletDiceOrConstant(i);
       handleOperator(char, i);
     } else {
       throw new ParsingError(`Unexpected token`, notation, char, i);
     }
   }
 
-  if (currentDiceToken) handleCurrentDiceToken(notation.length);
+  if (currentToken) handletDiceOrConstant(notation.length);
 
   if (tokens.length === 0) {
     throw new Error('Unable to parse');
@@ -85,19 +100,12 @@ function validateTokenIsOnlyNumbers(
   }
 }
 
-function validateTokenIsDiceToken(
-  token: string,
-  notation: string,
-  index: number
-) {
-  if (!token.match(/\d+d\d+/)) {
-    throw new ParsingError(
-      'Unable to interpret dice roll token',
-      notation,
-      token,
-      index
-    );
-  }
+function isDiceToken(token: string): boolean {
+  return !!token.match(/\d+d\d+/);
+}
+
+function isConstantToken(token: string): boolean {
+  return !token.match(/\D/);
 }
 
 export default tokenize;
