@@ -9,7 +9,7 @@ import {
   CloseParenToken,
 } from './tokens';
 
-export default function lex(tokens: Token[]): DiceNotationNode | null {
+function lex(tokens: Token[]): DiceNotationNode | null {
   let head: DiceNotationNode | null = null;
 
   function handleConstant(token: ConstantToken) {}
@@ -44,3 +44,5 @@ export default function lex(tokens: Token[]): DiceNotationNode | null {
 
   return head;
 }
+
+export default lex;
