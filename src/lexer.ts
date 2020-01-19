@@ -1,4 +1,4 @@
-import { DiceNotationNode, NodeType } from './nodes';
+import { DiceNotationNode } from './nodes';
 import {
   Token,
   ConstantToken,
@@ -8,39 +8,71 @@ import {
   OpenParenToken,
   CloseParenToken,
 } from './tokens';
+import LexingError from './LexingError';
+import { getPrecedence } from './operators';
 
 function lex(tokens: Token[]): DiceNotationNode | null {
   let head: DiceNotationNode | null = null;
+  const stack: Token[] = [];
+  const peekStack = (): Token | null =>
+    stack.length ? stack[stack.length - 1] : null;
 
-  function handleConstant(token: ConstantToken) {}
+  function popStack() {
+    // Pop down the stack to build up the tree
+  }
 
-  function handleDiceRoll(token: DiceRollToken) {}
+  function handleLeaf(token: ConstantToken | DiceRollToken, index: number) {
+    const top = peekStack();
 
-  function handleOperator(token: OperatorToken) {}
+    if (top === null) {
+      stack.push(token);
+      return;
+    }
 
-  function handleOpenParen(token: OpenParenToken) {}
+    if (top.type !== TokenType.Operator) {
+      throw new LexingError('Unexpected Token', token);
+    }
 
-  function handleCloseParen(token: CloseParenToken) {}
+    const nextToken = tokens[index + 1];
+    if (nextToken?.type === TokenType.Operator) {
+      stack.push(token);
+      if (getPrecedence(nextToken.operator) > getPrecedence(top.operator)) {
+        popStack();
+      }
+    }
+  }
 
-  tokens.forEach(token => {
+  function handleConstant(token: ConstantToken, index: number) {}
+
+  function handleDiceRoll(token: DiceRollToken, index: number) {}
+
+  function handleOperator(token: OperatorToken, index: number) {}
+
+  function handleOpenParen(token: OpenParenToken, index: number) {}
+
+  function handleCloseParen(token: CloseParenToken, index: number) {}
+
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i];
     switch (token.type) {
       case TokenType.Constant:
-        handleConstant(token);
+        handleLeaf(token, i);
         break;
       case TokenType.DiceRoll:
-        handleDiceRoll(token);
+        handleLeaf(token, i);
         break;
       case TokenType.Operator:
-        handleOperator(token);
-        break;
       case TokenType.OpenParen:
-        handleOpenParen(token);
+        // handleOperator(token, i);
+        // handleOpenParen(token, i);
+        // handleCloseParen(token, i);
+        stack.push(token);
         break;
       case TokenType.CloseParen:
-        handleCloseParen(token);
+        popStack();
         break;
     }
-  });
+  }
 
   return head;
 }
