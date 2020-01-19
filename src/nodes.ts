@@ -1,5 +1,11 @@
 import { Token, diceRollToken, operatorToken, constantToken } from './tokens';
 
+export enum NodeType {
+  DiceRoll = 'DiceRoll',
+  Operator = 'Operator',
+  Constant = 'Constant',
+}
+
 // Nodes
 export interface Node {
   type: string;
@@ -7,20 +13,20 @@ export interface Node {
 }
 
 export interface DiceRollNode extends Node {
-  type: 'DiceRoll';
+  type: NodeType.DiceRoll;
   count: number;
   numSides: number;
 }
 
 export interface ConstantNode extends Node {
-  type: 'Constant';
+  type: NodeType.Constant;
   value: number;
 }
 
 export type Operator = '+' | '-' | '/' | '*';
 
 export interface OperatorNode extends Node {
-  type: 'Operator';
+  type: NodeType.Operator;
   operator: Operator;
   left: DiceNotationNode;
   right: DiceNotationNode;
@@ -33,7 +39,7 @@ export const diceRollNode = (
   count: number,
   numSides: number
 ): DiceRollNode => ({
-  type: 'DiceRoll',
+  type: NodeType.DiceRoll,
   count,
   numSides,
   token: diceRollToken(count, numSides, 0, `${count}d${numSides}`),
@@ -44,7 +50,7 @@ export const operatorNode = (
   left: DiceNotationNode,
   right: DiceNotationNode
 ): OperatorNode => ({
-  type: 'Operator',
+  type: NodeType.Operator,
   operator,
   left,
   right,
@@ -52,7 +58,7 @@ export const operatorNode = (
 });
 
 export const constantNode = (value: number): ConstantNode => ({
-  type: 'Constant',
+  type: NodeType.Constant,
   value,
   token: constantToken(value, 0, '' + value),
 });
