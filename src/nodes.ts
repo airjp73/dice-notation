@@ -1,4 +1,5 @@
 import { Token, diceRollToken, operatorToken, constantToken } from './tokens';
+import { Operator } from './operators';
 
 export enum NodeType {
   DiceRoll = 'DiceRoll',
@@ -22,8 +23,6 @@ export interface ConstantNode extends Node {
   type: NodeType.Constant;
   value: number;
 }
-
-export type Operator = '+' | '-' | '/' | '*';
 
 export interface OperatorNode extends Node {
   type: NodeType.Operator;
