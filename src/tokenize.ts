@@ -83,10 +83,6 @@ function tokenize(notation: string): Token[] {
 
   if (currentToken) handletDiceOrConstant(notation.length);
 
-  if (tokens.length === 0) {
-    throw new Error('Unable to parse');
-  }
-
   return tokens;
 }
 
