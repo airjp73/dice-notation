@@ -6,9 +6,9 @@ class ParsingError extends Error {
     position: number
   ) {
     super(
-      `${message}: ${token} at position ${position}\n` +
+      `${message}: ${token} at position ${position - token.length}\n` +
         `${notation}\n` +
-        ' '.repeat(position - 1 - token.length) +
+        ' '.repeat(position - 1) +
         '^'
     );
   }
