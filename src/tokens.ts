@@ -45,6 +45,7 @@ export type Token =
   | DiceRollToken
   | ConstantToken;
 
+// Token builders used for constructing test data
 export const openParenToken = (
   position: number,
   content: string
