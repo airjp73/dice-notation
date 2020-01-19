@@ -19,7 +19,9 @@
   },
   "homepage": "https://github.com/airjp73/dice-notation#readme",
   "devDependencies": {
-    "jest": "^24.9.0"
+    "@types/jest": "^24.9.0",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.3.0"
   },
   "dependencies": {
     "typescript": "^3.7.5"
