@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/airjp73/dice-notation/issues"
   },
-  "homepage": "https://github.com/airjp73/dice-notation#readme"
+  "homepage": "https://github.com/airjp73/dice-notation#readme",
+  "devDependencies": {
+    "jest": "^24.9.0"
+  }
 }
