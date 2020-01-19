@@ -1,4 +1,3 @@
-import lex from '../lexer';
 import {
   Token,
   diceRollToken,
@@ -7,6 +6,7 @@ import {
   openParenToken,
   closeParenToken,
 } from '../tokens';
+import tokenize from '../tokenize';
 
 describe('tokenizer', () => {
   const cases: [string, string, Token[]][] = [
@@ -35,7 +35,7 @@ describe('tokenizer', () => {
       [
         diceRollToken(3, 7, 0, '3d7'),
         operatorToken('+', 4, '+'),
-        diceRollToken(10, 4, 6, '2d11'),
+        diceRollToken(2, 11, 6, '2d11'),
       ],
     ],
     [
@@ -102,10 +102,10 @@ describe('tokenizer', () => {
         diceRollToken(2, 4, 12, '2d4'),
         operatorToken('*', 22, '*'),
         diceRollToken(3, 8, 24, '3d8'),
-        operatorToken('/', 30, '/'),
-        diceRollToken(4, 9, 32, '4d9'),
-        operatorToken('-', 39, '-'),
-        diceRollToken(3, 7, 41, '3d7'),
+        operatorToken('/', 28, '/'),
+        diceRollToken(4, 9, 30, '4d9'),
+        operatorToken('-', 37, '-'),
+        diceRollToken(3, 7, 39, '3d7'),
       ],
     ],
     [
@@ -125,7 +125,10 @@ describe('tokenizer', () => {
     ],
   ];
 
-  it.each(cases)('should correctly lex %s', (description, notation, result) => {
-    expect(lex(notation)).toStrictEqual(result);
-  });
+  it.each(cases)(
+    'should correctly tokenize %s',
+    (description, notation, result) => {
+      expect(tokenize(notation)).toStrictEqual(result);
+    }
+  );
 });
