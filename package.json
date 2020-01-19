@@ -2,9 +2,11 @@
   "name": "dice-notation",
   "version": "1.0.0",
   "description": "A js library for parsing dice notation",
-  "main": "src/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -18,5 +20,8 @@
   "homepage": "https://github.com/airjp73/dice-notation#readme",
   "devDependencies": {
     "jest": "^24.9.0"
+  },
+  "dependencies": {
+    "typescript": "^3.7.5"
   }
 }

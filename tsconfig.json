@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "declaration": true,
+    "declarationDir": "./dist",
+    "outDir": "./dist",
+    "target": "esnext",
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
