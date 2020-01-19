@@ -1,3 +1,1 @@
-import diceNotation from './diceNotation';
-
-export default diceNotation;
+export { default as Lexer, lex } from './lexer';
