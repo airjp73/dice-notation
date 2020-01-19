@@ -1,14 +1,21 @@
 export interface DiceRollNode {
+  type: 'DiceRoll';
   count: number;
   numSides: number;
 }
 
-type Operator = '+' | '-' | '/' | '*';
-
-export interface OperatorNode {
-  operator: Operator;
-  left: DiceRollNode;
-  right: DiceRollNode;
+export interface ConstantNode {
+  type: 'Constant';
+  value: number;
 }
 
-export type DiceNotationTree = OperatorNode | DiceRollNode;
+export type Operator = '+' | '-' | '/' | '*';
+
+export interface OperatorNode {
+  type: 'Operator';
+  operator: Operator;
+  left: DiceNotationTree;
+  right: DiceNotationTree;
+}
+
+export type DiceNotationTree = OperatorNode | DiceRollNode | ConstantNode;
