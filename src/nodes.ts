@@ -1,27 +1,29 @@
+import { Token } from './tokens';
+
 // Nodes
 export interface Node {
   type: string;
   token: Token;
 }
 
-export interface DiceRollNode {
+export interface DiceRollNode extends Node {
   type: 'DiceRoll';
   count: number;
   numSides: number;
 }
 
-export interface ConstantNode {
+export interface ConstantNode extends Node {
   type: 'Constant';
   value: number;
 }
 
 export type Operator = '+' | '-' | '/' | '*';
 
-export interface OperatorNode {
+export interface OperatorNode extends Node {
   type: 'Operator';
   operator: Operator;
-  left: DiceNotationTree;
-  right: DiceNotationTree;
+  left: DiceNotationNode;
+  right: DiceNotationNode;
 }
 
-export type DiceNotationTree = OperatorNode | DiceRollNode | ConstantNode;
+export type DiceNotationNode = OperatorNode | DiceRollNode | ConstantNode;

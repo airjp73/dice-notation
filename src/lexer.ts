@@ -1,5 +1,5 @@
 import tokenize from './tokenize';
-import { DiceNotationTree } from './types';
+import { DiceNotationNode } from './nodes';
 import { Token } from './tokens';
 
-export default function lex(tokens: Token[]): DiceNotationTree {}
+export default function lex(tokens: Token[]): DiceNotationNode {}

@@ -1,10 +1,10 @@
-import { DiceNotationTree, DiceRollNode } from '../types';
+import { DiceNotationNode, DiceRollNode } from '../nodes';
 import { diceRoll, operator, constant } from '../objectConstructors';
 import lex from '../lexer';
 import tokenize from '../tokenize';
 
 describe('lexer', () => {
-  const cases: [string, string, DiceNotationTree][] = [
+  const cases: [string, string, DiceNotationNode][] = [
     ['single dice roll', '1d6', diceRoll(1, 6)],
     [
       'adding a constant',

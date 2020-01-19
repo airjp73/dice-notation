@@ -1,4 +1,4 @@
-import { Operator } from './types';
+import { Operator } from './nodes';
 
 export enum TokenType {
   OpenParen = 'OpenParen',

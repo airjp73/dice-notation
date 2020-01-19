@@ -1,10 +1,10 @@
 import {
   DiceRollNode,
-  DiceNotationTree,
+  DiceNotationNode,
   Operator,
   OperatorNode,
   ConstantNode,
-} from './types';
+} from './nodes';
 
 export const diceRoll = (count: number, numSides: number): DiceRollNode => ({
   type: 'DiceRoll',
@@ -14,8 +14,8 @@ export const diceRoll = (count: number, numSides: number): DiceRollNode => ({
 
 export const operator = (
   operator: Operator,
-  left: DiceNotationTree,
-  right: DiceNotationTree
+  left: DiceNotationNode,
+  right: DiceNotationNode
 ): OperatorNode => ({
   type: 'Operator',
   operator,
