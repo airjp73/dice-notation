@@ -1,6 +1,7 @@
 import { DiceNotationTree, DiceRollNode } from '../types';
 import { diceRoll, operator, constant } from '../objectConstructors';
 import lex from '../lexer';
+import tokenize from '../tokenize';
 
 describe('lexer', () => {
   const cases: [string, string, DiceNotationTree][] = [
@@ -56,6 +57,7 @@ describe('lexer', () => {
   ];
 
   it.each(cases)('should correctly lex %s', (description, notation, result) => {
-    expect(lex(notation)).toStrictEqual(result);
+    const tokens = tokenize(notation);
+    expect(lex(tokens)).toStrictEqual(result);
   });
 });
