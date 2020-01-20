@@ -1,107 +1,70 @@
-import { Token, TokenType } from './tokens';
-import ParsingError from './ParsingError';
+import * as moo from 'moo';
+import { TokenType } from './tokens';
+import { Operator } from './operators';
 
-function tokenize(notation: string): Token[] {
-  const tokens: Token[] = [];
+function tokenize(notation: string) {
+  const WHITE_SPACE = 'WHITE_SPACE';
 
-  let currentToken = '';
+  const lexer = moo.compile({
+    [WHITE_SPACE]: /[ \t]+/,
+    [TokenType.DiceRoll]: /\d+d\d+/,
+    [TokenType.Constant]: /\d+/,
+    [TokenType.Operator]: /\*|\/|\+|-/,
+    [TokenType.OpenParen]: '(',
+    [TokenType.CloseParen]: ')',
+  });
 
-  function handletDiceOrConstant(index: number) {
-    if (isDiceToken(currentToken)) {
-      const numbers = currentToken.split('d').map(num => parseInt(num));
-      tokens.push({
+  lexer.reset(notation);
+
+  return Array.from(lexer)
+    .filter(token => token.type !== WHITE_SPACE)
+    .map(processToken);
+}
+
+/**
+ * Take a moo token and turn it into a dice-notation token.
+ * @param token the moo token
+ */
+function processToken(token: moo.Token) {
+  switch (token.type) {
+    case TokenType.DiceRoll:
+      const numbers = token.value.split('d').map(num => parseInt(num));
+      return {
         type: TokenType.DiceRoll,
-        position: index - currentToken.length,
-        content: currentToken,
+        position: token.col - 1,
+        content: token.value,
         count: numbers[0],
         numSides: numbers[1],
-      });
-    } else if (isConstantToken(currentToken)) {
-      tokens.push({
+      };
+    case TokenType.Constant:
+      return {
         type: TokenType.Constant,
-        position: index - currentToken.length,
-        content: currentToken,
-        value: parseInt(currentToken),
-      });
-    } else {
-      throw new ParsingError(
-        'Unable to interpret dice roll token',
-        notation,
-        currentToken,
-        index
-      );
-    }
-    currentToken = '';
-  }
-
-  const validOperators = ['+', '-', '*', '/', '(', ')'];
-  function handleOperator(operator: string, index: number) {
-    if (
-      operator === '+' ||
-      operator === '-' ||
-      operator === '*' ||
-      operator === '/'
-    ) {
-      tokens.push({
+        position: token.col - 1,
+        content: token.value,
+        value: parseInt(token.value),
+      };
+    case TokenType.Operator:
+      return {
         type: TokenType.Operator,
-        position: index,
-        content: operator,
-        operator: operator,
-      });
-    } else if (operator === '(') {
-      tokens.push({
+        position: token.col - 1,
+        content: token.value,
+        operator: token.value as Operator,
+      };
+    case TokenType.OpenParen:
+      return {
         type: TokenType.OpenParen,
-        position: index,
-        content: operator,
-      });
-    } else if (operator === ')') {
-      tokens.push({
+        position: token.col - 1,
+        content: token.value,
+      };
+    case TokenType.CloseParen:
+      return {
         type: TokenType.CloseParen,
-        position: index,
-        content: operator,
-      });
-    }
+        position: token.col - 1,
+        content: token.value,
+      };
+    default:
+      throw new Error('Unrecognized token');
   }
-
-  for (let i = 0; i < notation.length; i++) {
-    const char = notation.charAt(i);
-
-    if (char.match(/\d/)) {
-      currentToken += char;
-    } else if (char === 'd') {
-      validateTokenIsOnlyNumbers(currentToken, notation, i);
-      currentToken += char;
-    } else if (char === ' ') {
-      if (currentToken) handletDiceOrConstant(i);
-    } else if (validOperators.includes(char)) {
-      if (currentToken) handletDiceOrConstant(i);
-      handleOperator(char, i);
-    } else {
-      throw new ParsingError(`Unexpected token`, notation, char, i);
-    }
-  }
-
-  if (currentToken) handletDiceOrConstant(notation.length);
-
-  return tokens;
-}
-
-function validateTokenIsOnlyNumbers(
-  token: string,
-  notation: string,
-  index: number
-) {
-  if (token.match(/\D/)) {
-    throw new ParsingError('Unexpected token', notation, token, index);
-  }
-}
-
-function isDiceToken(token: string): boolean {
-  return !!token.match(/\d+d\d+/);
-}
-
-function isConstantToken(token: string): boolean {
-  return !token.match(/\D/);
 }
 
 export default tokenize;
