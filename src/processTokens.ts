@@ -7,7 +7,7 @@ import {
   RolledDiceToken,
 } from './tokens';
 import ExhaustiveCaseError from './ExhaustiveCaseError';
-import { getPrecedence } from './operators';
+import { getPrecedence, Operator } from './operators';
 
 const rollDiceToken = (token: DiceRollToken): RolledDiceToken => {
   const rolls: number[] = [];
@@ -29,16 +29,67 @@ function processTokens(tokens: Token[]): DiceRollResult {
       return { ...token };
     }
   });
-  return process(0, processingTokens);
+  return process(processingTokens);
 }
 
-function process(currentValue: number, tokens: ResultToken[]): DiceRollResult {
+function doMath(val1: number, operator: Operator, val2: number): number {
+  switch (operator) {
+    case '*':
+      return val1 * val2;
+    case '+':
+      return val1 + val2;
+    case '-':
+      return val1 - val2;
+    case '/':
+      return val1 / val2;
+  }
+}
+
+function process(tokens: ResultToken[]): DiceRollResult {
   let currentStack: ResultToken[] = [];
   const stackStack: ResultToken[][] = [];
+  let total: number = 0;
 
   const peekTop = () => currentStack[currentStack.length - 1];
 
-  const popStack = () => {};
+  const popValue = (): number => {
+    const top = currentStack.pop();
+    if (!top) throw new Error('Expected constant or dice roll but got nothing');
+
+    if (top.type === TokenType.Constant) {
+      return top.value;
+    } else if (top.type === TokenType.DiceRoll) {
+      return top.rolls.reduce((agg, num) => agg + num, 0);
+    } else {
+      throw new Error(`Unexpected token: ${top.content}`);
+    }
+  };
+
+  const popOperator = (): Operator => {
+    const top = currentStack.pop();
+    if (!top) throw new Error('Expected operator but got nothing');
+
+    if (top.type !== TokenType.Operator)
+      throw new Error(`Unexpected token: ${top.content}`);
+
+    return top.operator;
+  };
+
+  const popStack = () => {
+    if (currentStack.length) {
+      let total = popValue();
+
+      while (currentStack.length) {
+        const operator = popOperator();
+        const value = popValue();
+        total = doMath(value, operator, total);
+      }
+    }
+
+    const nextStack = stackStack.pop();
+    if (!nextStack) throw new Error('Unexpected termination of expression');
+    currentStack = nextStack;
+  };
 
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
@@ -62,9 +113,7 @@ function process(currentValue: number, tokens: ResultToken[]): DiceRollResult {
       case TokenType.CloseParen:
         if (currentStack.length)
           throw new Error(`Unexpected token: ${peekTop().content}`);
-        const nextStack = stackStack.pop();
-        if (!nextStack) throw new Error(`Unexpected token: ${token.content}`);
-        currentStack = nextStack;
+        popStack();
         break;
       case TokenType.OpenParen:
         stackStack.push(currentStack);
@@ -77,6 +126,8 @@ function process(currentValue: number, tokens: ResultToken[]): DiceRollResult {
         throw new ExhaustiveCaseError('Unknown token type', token);
     }
   }
+
+  return;
 }
 
 export default processTokens;
