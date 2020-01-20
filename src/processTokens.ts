@@ -108,6 +108,7 @@ function processTokens(tokens: Token[]): DiceRollResult {
             throw new Error(`Unexpected token: ${peekTop().content}`);
           return total;
         case TokenType.OpenParen:
+          i++;
           stack.push({
             type: TokenType.Constant,
             value: tallyRolls(),
