@@ -1,8 +1,8 @@
 import * as moo from 'moo';
-import { TokenType } from './tokens';
+import { TokenType, Token } from './tokens';
 import { Operator } from './operators';
 
-function tokenize(notation: string) {
+function tokenize(notation: string): Token[] {
   const WHITE_SPACE = 'WHITE_SPACE';
 
   const lexer = moo.compile({
@@ -25,7 +25,7 @@ function tokenize(notation: string) {
  * Take a moo token and turn it into a dice-notation token.
  * @param token the moo token
  */
-function processToken(token: moo.Token) {
+function processToken(token: moo.Token): Token {
   switch (token.type) {
     case TokenType.DiceRoll:
       const numbers = token.value.split('d').map(num => parseInt(num));
