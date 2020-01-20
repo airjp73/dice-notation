@@ -21,10 +21,13 @@
   "homepage": "https://github.com/airjp73/dice-notation#readme",
   "devDependencies": {
     "@types/jest": "^24.9.0",
+    "@types/moo": "^0.5.1",
     "jest": "^24.9.0",
     "ts-jest": "^24.3.0"
   },
   "dependencies": {
+    "moo": "^0.5.1",
+    "nearly": "^1.8.1",
     "typescript": "^3.7.5"
   }
 }
