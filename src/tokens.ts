@@ -45,6 +45,22 @@ export type Token =
   | DiceRollToken
   | ConstantToken;
 
+export interface RolledDiceToken extends DiceRollToken {
+  rolls: number[];
+}
+
+export type ResultToken =
+  | OpenParenToken
+  | CloseParenToken
+  | OperatorToken
+  | RolledDiceToken
+  | ConstantToken;
+
+export interface DiceRollResult {
+  value: number;
+  tokens: ResultToken[];
+}
+
 // Token builders used for constructing test data
 export const openParenToken = (
   position: number,
