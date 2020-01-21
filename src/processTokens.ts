@@ -46,7 +46,6 @@ function processTokens(tokens: Token[]): DiceRollResult {
 
   function tallyRolls(): number {
     let stack: ResultToken[] = [];
-    let total: number = 0;
 
     const peekTop = () => stack[stack.length - 1];
 
@@ -75,13 +74,20 @@ function processTokens(tokens: Token[]): DiceRollResult {
     };
 
     const popStack = () => {
-      total += popValue();
+      let total = popValue();
 
       while (stack.length) {
         const operator = popOperator();
         const value = popValue();
         total = doMath(value, operator, total);
       }
+
+      stack.push({
+        type: TokenType.Constant,
+        value: total,
+        content: 'asdf',
+        position: 9,
+      });
     };
 
     for (; i < tokens.length; i++) {
@@ -89,7 +95,7 @@ function processTokens(tokens: Token[]): DiceRollResult {
 
       switch (token.type) {
         case TokenType.DiceRoll:
-        case TokenType.Constant:
+        case TokenType.Constant: {
           const top = peekTop();
           stack.push(token);
           const lookAhead = tokens[i + 1];
@@ -103,19 +109,32 @@ function processTokens(tokens: Token[]): DiceRollResult {
             popStack();
           }
           break;
+        }
         case TokenType.CloseParen:
-          if (stack.length)
+          if (stack.length > 1)
             throw new Error(`Unexpected token: ${peekTop().content}`);
-          return total;
-        case TokenType.OpenParen:
+          return popValue();
+        case TokenType.OpenParen: {
           i++;
+          const top = peekTop();
           stack.push({
             type: TokenType.Constant,
             value: tallyRolls(),
             content: 'asdf',
             position: 9,
           });
+          const lookAhead = tokens[i + 1];
+          if (
+            top &&
+            top.type === TokenType.Operator &&
+            (!lookAhead ||
+              lookAhead.type !== TokenType.Operator ||
+              getPrecedence(top.operator) <= getPrecedence(lookAhead.operator))
+          ) {
+            popStack();
+          }
           break;
+        }
         case TokenType.Operator:
           stack.push(token);
           break;
@@ -125,7 +144,7 @@ function processTokens(tokens: Token[]): DiceRollResult {
     }
 
     if (stack.length) popStack();
-    return total;
+    return popValue();
   }
 
   return {
