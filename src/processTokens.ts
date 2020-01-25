@@ -139,7 +139,6 @@ export function calculateFinalResult(
         case CoreTokenTypes.OpenParen: {
           i++;
           const top = peekTop();
-          // recurse?
           stack.push(tallyRolls());
           popStackIfNecessary(top);
           break;
