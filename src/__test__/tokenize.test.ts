@@ -6,7 +6,7 @@ import {
   openParenToken,
   closeParenToken,
 } from '../tokens';
-import tokenize from '../tokenize';
+import { tokenize } from '../index';
 
 describe('tokenizer', () => {
   const cases: [string, string, Token[]][] = [

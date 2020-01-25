@@ -1,5 +1,4 @@
-import { rollDice } from '../calculateFinalResult';
-import roll from '../roll';
+import { rollDice, roll } from '../index';
 import { diceRollToken } from '../tokens';
 
 describe('roll', () => {
