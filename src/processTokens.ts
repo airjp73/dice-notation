@@ -23,7 +23,7 @@ export function rollDice(tokens: Token[]): RollResults {
   });
 }
 
-export type RollTotal = number | Exclude<Token, DiceRollToken>;
+export type RollTotal = number | null;
 
 export function tallyRolls(tokens: Token[], rolls: RollResults): RollTotal[] {
   return tokens.map((token, index) => {
@@ -35,10 +35,10 @@ export function tallyRolls(tokens: Token[], rolls: RollResults): RollTotal[] {
           throw new Error(
             `Roll result array does not match provided tokens. Got results but expected null at position ${index}`
           );
-        return token;
+        return null;
       case CoreTokenTypes.DiceRoll:
         const rollsForToken = rolls[index];
-        if (!rollsForToken)
+        if (isNil(rollsForToken))
           throw new Error(
             `Roll result array does not match provided tokens. Got null but expected results at position ${index}`
           );
@@ -67,6 +67,8 @@ const isOperator = (stackItem: ValueOrOperatorString): stackItem is Operator =>
   typeof stackItem === 'string';
 const isValue = (stackItem: ValueOrOperatorString): stackItem is number =>
   typeof stackItem === 'number';
+const isNil = (value: any): value is null | undefined =>
+  value === null || value === undefined;
 
 type ValueOrOperatorString = number | Operator;
 
@@ -83,7 +85,7 @@ export function calculateFinalResult(
 
     const popValue = (): number => {
       const top = stack.pop();
-      if (!top)
+      if (isNil(top))
         throw new Error('Expected dice roll or constant but got nothing');
       if (isOperator(top))
         throw new Error('Expected dice roll or constant but got operator');
@@ -92,7 +94,7 @@ export function calculateFinalResult(
 
     const popOperator = (): Operator => {
       const top = stack.pop();
-      if (!top) throw new Error('Expected operator but got nothing');
+      if (isNil(top)) throw new Error('Expected operator but got nothing');
       if (isValue(top))
         throw new Error('Expected operator but got dice roll or constant');
       return top;
@@ -115,12 +117,21 @@ export function calculateFinalResult(
       if (
         top &&
         isOperator(top) &&
-        (!lookAhead ||
+        (isNil(lookAhead) ||
           lookAhead.type !== CoreTokenTypes.Operator ||
           getPrecedence(top) <= getPrecedence(lookAhead.operator))
       ) {
         popStack();
       }
+    };
+
+    const getRollValue = (): number => {
+      const value = values[i];
+      if (isNil(value))
+        throw new Error(
+          `Roll values do not match provided tokens. Expected value but got none at position ${i}`
+        );
+      return value;
     };
 
     for (; i < tokens.length; i++) {
@@ -129,13 +140,10 @@ export function calculateFinalResult(
       switch (token.type) {
         case CoreTokenTypes.DiceRoll: {
           const top = peekTop();
-          stack.push(top);
+          stack.push(getRollValue());
           popStackIfNecessary(top);
+          break;
         }
-        case CoreTokenTypes.CloseParen:
-          if (stack.length > 1)
-            throw new Error(`Unexpected leftover tokens at position ${i}`);
-          return popValue();
         case CoreTokenTypes.OpenParen: {
           i++;
           const top = peekTop();
@@ -143,6 +151,10 @@ export function calculateFinalResult(
           popStackIfNecessary(top);
           break;
         }
+        case CoreTokenTypes.CloseParen:
+          if (stack.length > 1)
+            throw new Error(`Unexpected leftover tokens at position ${i}`);
+          return popValue();
         case CoreTokenTypes.Operator:
           stack.push(token.operator);
           break;
