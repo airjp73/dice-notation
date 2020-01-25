@@ -1,3 +1,7 @@
+export interface Plugins {
+  [key: string]: DiceRule<any>;
+}
+
 export interface DiceRule<T> {
   regex: RegExp;
   typeConstant: string;

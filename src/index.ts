@@ -1,2 +1,1 @@
-export { rollDice, tallyRolls, calculateFinalResult } from './processTokens';
-export { default as roll } from './roll';
+export { default as createDiceRoller } from './createDiceRoller';
