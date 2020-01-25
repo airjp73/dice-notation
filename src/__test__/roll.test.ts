@@ -1,5 +1,4 @@
-import tokenize from '../tokenize';
-import processTokens from '../processTokens';
+import roll from '../roll';
 
 describe('processTokens', () => {
   const cases: [string, number, number, number][] = [
@@ -22,7 +21,7 @@ describe('processTokens', () => {
 
   it.each(cases)('should correctly roll %s', (notation, min, max, repeats) => {
     for (let i = 0; i < repeats; i++) {
-      const result = processTokens(tokenize(notation)).value;
+      const { result } = roll(notation);
       expect(result).toBeLessThanOrEqual(max);
       expect(result).toBeGreaterThanOrEqual(min);
     }
