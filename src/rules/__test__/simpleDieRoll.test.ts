@@ -1,5 +1,4 @@
-import simpleDieRoll, { SimpleDiceRollToken } from '../simpleDieRoll';
-import { diceRollToken, Token, DiceRollToken } from '../../tokens';
+import simpleDieRoll from '../simpleDieRoll';
 
 describe('simpleDieRoll', () => {
   describe('tokenize', () => {
