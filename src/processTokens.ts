@@ -18,7 +18,7 @@ function rollDice(tokens: Token[]): RollResults {
       case CoreTokenTypes.Operator:
         return null;
       case CoreTokenTypes.DiceRoll:
-        return plugins[token.type].roll(token.detail);
+        return plugins[token.detailType].roll(token.detail);
     }
   });
 }
@@ -45,7 +45,10 @@ export function tallyRolls(
           throw new Error(
             `Roll result array does not match provided tokens. Got null but expected results at position ${index}`
           );
-        return plugins[token.type].calculateValue(token.detail, rollsForToken);
+        return plugins[token.detailType].calculateValue(
+          token.detail,
+          rollsForToken
+        );
     }
   });
 }

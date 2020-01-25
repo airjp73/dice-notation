@@ -59,9 +59,10 @@ function processToken(token: moo.Token): Token {
       const rule = plugins[token.type];
       if (!rule) throw new Error(`Unrecognized token of type ${token.type}`);
       return {
-        type: rule.typeConstant,
+        type: CoreTokenTypes.DiceRoll,
         content: token.value,
         position: token.col - 1,
+        detailType: rule.typeConstant,
         detail: rule.tokenize(token.value),
       };
   }
