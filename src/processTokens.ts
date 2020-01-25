@@ -66,6 +66,11 @@ function doMath(val1: number, operator: Operator, val2: number): number {
   }
 }
 
+const isOperator = (stackItem: ValueOrOperatorString): stackItem is Operator =>
+  typeof stackItem === 'string';
+const isValue = (stackItem: ValueOrOperatorString): stackItem is number =>
+  typeof stackItem === 'number';
+
 type ValueOrOperatorString = number | Operator;
 
 function calculateFinalResult(
@@ -76,12 +81,6 @@ function calculateFinalResult(
 
   function tallyRolls() {
     let stack: ValueOrOperatorString[] = [];
-
-    const isOperator = (
-      stackItem: ValueOrOperatorString
-    ): stackItem is Operator => typeof stackItem === 'string';
-    const isValue = (stackItem: ValueOrOperatorString): stackItem is number =>
-      typeof stackItem === 'number';
 
     const peekTop = () => stack[stack.length - 1];
 
