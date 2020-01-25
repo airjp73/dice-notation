@@ -1,72 +1,49 @@
 import { Operator } from './operators';
+import { SimpleDiceRollToken } from './rules/simpleDieRoll';
 
-export enum TokenType {
-  OpenParen = 'OpenParen',
-  CloseParen = 'CloseParen',
-  Operator = 'Operator',
-  DiceRoll = 'DiceRoll',
-  Constant = 'Constant',
+export enum CoreTokenTypes {
+  OpenParen = '_OpenParen',
+  CloseParen = '_CloseParen',
+  Operator = '_Operator',
+  DiceRoll = '_DiceRoll',
+  Constant = '_Constant',
 }
 
 export interface BaseToken {
-  type: TokenType;
+  type: string;
   position: number;
   content: string;
 }
 
 export interface OpenParenToken extends BaseToken {
-  type: TokenType.OpenParen;
+  type: CoreTokenTypes.OpenParen;
 }
 
 export interface CloseParenToken extends BaseToken {
-  type: TokenType.CloseParen;
+  type: CoreTokenTypes.CloseParen;
 }
 
 export interface OperatorToken extends BaseToken {
-  type: TokenType.Operator;
+  type: CoreTokenTypes.Operator;
   operator: Operator;
 }
 
-export interface DiceRollToken extends BaseToken {
-  type: TokenType.DiceRoll;
-  count: number;
-  numSides: number;
-}
-
-export interface ConstantToken extends BaseToken {
-  type: TokenType.Constant;
-  value: number;
+export interface DiceRollToken<T = any> extends BaseToken {
+  detail: any;
 }
 
 export type Token =
   | OpenParenToken
   | CloseParenToken
   | OperatorToken
-  | DiceRollToken
-  | ConstantToken;
-
-export interface RolledDiceToken extends DiceRollToken {
-  rolls: number[];
-}
-
-export type ResultToken =
-  | OpenParenToken
-  | CloseParenToken
-  | OperatorToken
-  | RolledDiceToken
-  | ConstantToken;
-
-export interface DiceRollResult {
-  value: number;
-  tokens: ResultToken[];
-}
+  | DiceRollToken;
 
 // Token builders used for constructing test data
 export const openParenToken = (
   position: number,
   content: string
 ): OpenParenToken => ({
-  type: TokenType.OpenParen,
+  type: CoreTokenTypes.OpenParen,
   position,
   content,
 });
@@ -75,7 +52,7 @@ export const closeParenToken = (
   position: number,
   content: string
 ): CloseParenToken => ({
-  type: TokenType.CloseParen,
+  type: CoreTokenTypes.CloseParen,
   position,
   content,
 });
@@ -85,7 +62,7 @@ export const operatorToken = (
   position: number,
   content: string
 ): OperatorToken => ({
-  type: TokenType.Operator,
+  type: CoreTokenTypes.Operator,
   position,
   content,
   operator,
@@ -96,21 +73,20 @@ export const diceRollToken = (
   numSides: number,
   position: number,
   content: string
-): DiceRollToken => ({
-  type: TokenType.DiceRoll,
+): DiceRollToken<SimpleDiceRollToken> => ({
+  type: CoreTokenTypes.DiceRoll,
   position,
   content,
-  count,
-  numSides,
+  detail: { count, numSides },
 });
 
 export const constantToken = (
   value: number,
   position: number,
   content: string
-): ConstantToken => ({
-  type: TokenType.Constant,
+): DiceRollToken<number> => ({
+  type: CoreTokenTypes.Constant,
   position,
   content,
-  value,
+  detail: value,
 });

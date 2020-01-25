@@ -1,7 +1,6 @@
 import { DiceRule } from './types';
 import random from '../util/random';
-
-export const SIMPLE_DIE_ROLL = '_SimpleDieRoll';
+import { CoreTokenTypes } from '../tokens';
 
 export interface SimpleDiceRollToken {
   count: number;
@@ -10,17 +9,16 @@ export interface SimpleDiceRollToken {
 
 const simpleDieRoll: DiceRule<SimpleDiceRollToken> = {
   regex: /\d+d\d+/,
-  typeConstant: SIMPLE_DIE_ROLL,
+  typeConstant: CoreTokenTypes.DiceRoll,
   tokenize: raw => {
     const [count, numSides] = raw.split('d').map(num => parseInt(num));
     return { count, numSides };
   },
-  calculateValue: token => {
+  roll: token => {
     const { count, numSides } = token;
-    const rolls: number[] = new Array(count).map(() => random(1, numSides));
-    const result = rolls.reduce((agg, num) => agg + num, 0);
-    return { result, rolls };
+    return new Array(count).map(() => random(1, numSides));
   },
+  calculateValue: (token, rolls) => rolls.reduce((agg, num) => agg + num, 0),
 };
 
 export default simpleDieRoll;

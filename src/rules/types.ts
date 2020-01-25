@@ -1,11 +1,9 @@
 export interface DiceRule<T> {
   regex: RegExp;
-  typeConstant: string | Symbol;
+  typeConstant: string;
   tokenize: (raw: string) => T;
-  calculateValue: (token: T) => RollResult;
+  roll: (token: T) => Rolls;
+  calculateValue: (token: T, rolls: number[]) => number;
 }
 
-export interface RollResult {
-  result: number;
-  rolls: number[];
-}
+export type Rolls = number[];

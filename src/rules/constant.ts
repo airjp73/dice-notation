@@ -1,12 +1,12 @@
 import { DiceRule } from './types';
-
-export const CONSTANT = '_Constant';
+import { CoreTokenTypes } from '../tokens';
 
 const constant: DiceRule<number> = {
   regex: /\d+/,
-  typeConstant: CONSTANT,
+  typeConstant: CoreTokenTypes.Constant,
   tokenize: raw => parseInt(raw),
-  calculateValue: token => ({ result: token, rolls: [] }),
+  roll: () => [],
+  calculateValue: token => token,
 };
 
 export default constant;
