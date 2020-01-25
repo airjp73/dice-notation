@@ -10,7 +10,7 @@ const plugins = {
   [constant.typeConstant]: constant,
 };
 
-function rollDice(tokens: Token[]): RollResults {
+export function rollDice(tokens: Token[]): RollResults {
   return tokens.map(token => {
     switch (token.type) {
       case CoreTokenTypes.CloseParen:
@@ -23,12 +23,9 @@ function rollDice(tokens: Token[]): RollResults {
   });
 }
 
-export type ValueOrOperatorToken = number | Exclude<Token, DiceRollToken>;
+export type RollTotal = number | Exclude<Token, DiceRollToken>;
 
-export function tallyRolls(
-  tokens: Token[],
-  rolls: RollResults
-): ValueOrOperatorToken[] {
+export function tallyRolls(tokens: Token[], rolls: RollResults): RollTotal[] {
   return tokens.map((token, index) => {
     switch (token.type) {
       case CoreTokenTypes.CloseParen:
@@ -73,9 +70,9 @@ const isValue = (stackItem: ValueOrOperatorString): stackItem is number =>
 
 type ValueOrOperatorString = number | Operator;
 
-function calculateFinalResult(
+export function calculateFinalResult(
   tokens: Token[],
-  values: ValueOrOperatorToken[]
+  values: RollTotal[]
 ): number {
   let i = 0;
 
@@ -167,5 +164,3 @@ function calculateFinalResult(
 
   return tallyRolls();
 }
-
-export default calculateFinalResult;
