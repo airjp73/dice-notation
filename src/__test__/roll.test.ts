@@ -1,6 +1,8 @@
+import { rollDice } from '../processTokens';
 import roll from '../roll';
+import { diceRollToken } from '../tokens';
 
-describe('processTokens', () => {
+describe('roll', () => {
   const cases: [string, number, number, number][] = [
     ['1d6', 1, 6, 12],
     ['1d12', 1, 12, 12],
@@ -25,5 +27,23 @@ describe('processTokens', () => {
       expect(result).toBeLessThanOrEqual(max);
       expect(result).toBeGreaterThanOrEqual(min);
     }
+  });
+});
+
+describe('rollDice', () => {
+  it('should handle rolls', () => {
+    const tokens = [
+      diceRollToken(1, 6, 0, ''),
+      diceRollToken(5, 8, 0, ''),
+      diceRollToken(2, 10, 0, ''),
+      diceRollToken(4, 4, 0, ''),
+    ];
+
+    const result = rollDice(tokens);
+    expect(result).toHaveLength(tokens.length);
+    result.forEach((rolls, index) => {
+      const { count } = tokens[index].detail;
+      expect(rolls).toHaveLength(count);
+    });
   });
 });
