@@ -12,7 +12,12 @@ describe('simpleDieRoll', () => {
 
   describe('roll', () => {
     it('should return an array with one number for each dice rolled', () => {
-      expect(simpleDieRoll.roll({ count: 25, numSides: 6 })).toHaveLength(25);
+      const rolls = simpleDieRoll.roll({ count: 25, numSides: 6 });
+      expect(rolls).toHaveLength(25);
+      rolls.forEach(val => {
+        expect(val).toBeLessThanOrEqual(6);
+        expect(val).toBeGreaterThanOrEqual(1);
+      });
     });
   });
 
