@@ -7,3 +7,5 @@ export interface DiceRule<T> {
 }
 
 export type Rolls = number[];
+
+export type RollResults = (Rolls | null)[];

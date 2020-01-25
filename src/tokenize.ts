@@ -1,17 +1,24 @@
 import * as moo from 'moo';
-import { TokenType, Token } from './tokens';
+import { CoreTokenTypes, Token } from './tokens';
 import { Operator } from './operators';
+import simpleDieRoll from './rules/simpleDieRoll';
+import constant from './rules/constant';
+
+const plugins = {
+  [simpleDieRoll.typeConstant]: simpleDieRoll,
+  [constant.typeConstant]: constant,
+};
 
 function tokenize(notation: string): Token[] {
   const WHITE_SPACE = 'WHITE_SPACE';
 
   const lexer = moo.compile({
     [WHITE_SPACE]: /[ \t]+/,
-    [TokenType.DiceRoll]: /\d+d\d+/,
-    [TokenType.Constant]: /\d+/,
-    [TokenType.Operator]: /\*|\/|\+|-/,
-    [TokenType.OpenParen]: '(',
-    [TokenType.CloseParen]: ')',
+    [CoreTokenTypes.Operator]: /\*|\/|\+|-/,
+    [CoreTokenTypes.OpenParen]: '(',
+    [CoreTokenTypes.CloseParen]: ')',
+    [simpleDieRoll.typeConstant]: simpleDieRoll.regex,
+    [constant.typeConstant]: constant.regex,
   });
 
   lexer.reset(notation);
@@ -26,44 +33,37 @@ function tokenize(notation: string): Token[] {
  * @param token the moo token
  */
 function processToken(token: moo.Token): Token {
+  if (!token.type) throw new Error('Unrecognized token');
+
   switch (token.type) {
-    case TokenType.DiceRoll:
-      const numbers = token.value.split('d').map(num => parseInt(num));
+    case CoreTokenTypes.Operator:
       return {
-        type: TokenType.DiceRoll,
-        position: token.col - 1,
-        content: token.value,
-        count: numbers[0],
-        numSides: numbers[1],
-      };
-    case TokenType.Constant:
-      return {
-        type: TokenType.Constant,
-        position: token.col - 1,
-        content: token.value,
-        value: parseInt(token.value),
-      };
-    case TokenType.Operator:
-      return {
-        type: TokenType.Operator,
+        type: CoreTokenTypes.Operator,
         position: token.col - 1,
         content: token.value,
         operator: token.value as Operator,
       };
-    case TokenType.OpenParen:
+    case CoreTokenTypes.OpenParen:
       return {
-        type: TokenType.OpenParen,
+        type: CoreTokenTypes.OpenParen,
         position: token.col - 1,
         content: token.value,
       };
-    case TokenType.CloseParen:
+    case CoreTokenTypes.CloseParen:
       return {
-        type: TokenType.CloseParen,
+        type: CoreTokenTypes.CloseParen,
         position: token.col - 1,
         content: token.value,
       };
     default:
-      throw new Error('Unrecognized token');
+      const rule = plugins[token.type];
+      if (!rule) throw new Error(`Unrecognized token of type ${token.type}`);
+      return {
+        type: rule.typeConstant,
+        content: token.value,
+        position: token.col - 1,
+        detail: rule.tokenize(token.value),
+      };
   }
 }
 

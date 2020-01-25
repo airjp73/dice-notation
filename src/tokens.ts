@@ -1,16 +1,16 @@
 import { Operator } from './operators';
-import { SimpleDiceRollToken } from './rules/simpleDieRoll';
+import { SimpleDiceRollToken, SIMPLE_DIE_ROLL } from './rules/simpleDieRoll';
+import { CONSTANT } from './rules/constant';
 
 export enum CoreTokenTypes {
-  OpenParen = '_OpenParen',
-  CloseParen = '_CloseParen',
-  Operator = '_Operator',
-  DiceRoll = '_DiceRoll',
-  Constant = '_Constant',
+  OpenParen = 'OpenParen',
+  CloseParen = 'CloseParen',
+  Operator = 'Operator',
+  DiceRoll = 'DiceRoll',
 }
 
 export interface BaseToken {
-  type: string;
+  type: CoreTokenTypes;
   position: number;
   content: string;
 }
@@ -29,7 +29,9 @@ export interface OperatorToken extends BaseToken {
 }
 
 export interface DiceRollToken<T = any> extends BaseToken {
-  detail: any;
+  type: CoreTokenTypes.DiceRoll;
+  detailType: string;
+  detail: T;
 }
 
 export type Token =
@@ -77,6 +79,7 @@ export const diceRollToken = (
   type: CoreTokenTypes.DiceRoll,
   position,
   content,
+  detailType: SIMPLE_DIE_ROLL,
   detail: { count, numSides },
 });
 
@@ -85,8 +88,9 @@ export const constantToken = (
   position: number,
   content: string
 ): DiceRollToken<number> => ({
-  type: CoreTokenTypes.Constant,
+  type: CoreTokenTypes.DiceRoll,
   position,
   content,
+  detailType: CONSTANT,
   detail: value,
 });
