@@ -1,9 +1,9 @@
-import { Token, CoreTokenTypes, OperatorToken, DiceRollToken } from './tokens';
 import ExhaustiveCaseError from './ExhaustiveCaseError';
 import { getPrecedence, Operator } from './operators';
-import simpleDieRoll from './rules/simpleDieRoll';
 import constant from './rules/constant';
+import simpleDieRoll from './rules/simpleDieRoll';
 import { RollResults } from './rules/types';
+import { CoreTokenTypes, Token } from './tokens';
 
 const plugins = {
   [simpleDieRoll.typeConstant]: simpleDieRoll,
