@@ -21,8 +21,6 @@ function createTokenize(plugins: Plugins) {
     rules[plugin.typeConstant] = plugin.regex;
   });
 
-  console.log(rules);
-
   function tokenize(notation: string): Token[] {
     const lexer = moo.compile(rules);
     lexer.reset(notation);
