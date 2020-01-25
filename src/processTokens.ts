@@ -110,6 +110,19 @@ export function calculateFinalResult(
       stack.push(total);
     };
 
+    const popStackIfNecessary = (top: ValueOrOperatorString) => {
+      const lookAhead = tokens[i + 1];
+      if (
+        top &&
+        isOperator(top) &&
+        (!lookAhead ||
+          lookAhead.type !== CoreTokenTypes.Operator ||
+          getPrecedence(top) <= getPrecedence(lookAhead.operator))
+      ) {
+        popStack();
+      }
+    };
+
     for (; i < tokens.length; i++) {
       let token = tokens[i];
 
@@ -117,17 +130,7 @@ export function calculateFinalResult(
         case CoreTokenTypes.DiceRoll: {
           const top = peekTop();
           stack.push(top);
-          const lookAhead = tokens[i + 1];
-          if (
-            top &&
-            isOperator(top) &&
-            (!lookAhead ||
-              lookAhead.type !== CoreTokenTypes.Operator ||
-              getPrecedence(top) <= getPrecedence(lookAhead.operator))
-          ) {
-            popStack();
-          }
-          break;
+          popStackIfNecessary(top);
         }
         case CoreTokenTypes.CloseParen:
           if (stack.length > 1)
@@ -138,16 +141,7 @@ export function calculateFinalResult(
           const top = peekTop();
           // recurse?
           stack.push(tallyRolls());
-          const lookAhead = tokens[i + 1];
-          if (
-            top &&
-            isOperator(top) &&
-            (!lookAhead ||
-              lookAhead.type !== CoreTokenTypes.Operator ||
-              getPrecedence(top) <= getPrecedence(lookAhead.operator))
-          ) {
-            popStack();
-          }
+          popStackIfNecessary(top);
           break;
         }
         case CoreTokenTypes.Operator:
