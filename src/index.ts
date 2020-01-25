@@ -1,1 +1,2 @@
-export { default as lex } from './lexer';
+export { rollDice, tallyRolls, calculateFinalResult } from './processTokens';
+export { default as roll } from './roll';
