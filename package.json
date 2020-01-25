@@ -1,5 +1,5 @@
 {
-  "name": "dice-notation",
+  "name": "@airjp73/dice-notation",
   "version": "1.0.0",
   "description": "A js library for parsing dice notation",
   "main": "dist/index.js",
@@ -7,7 +7,8 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "build": "tsc"
+    "build": "tsc",
+    "prepublish": "tsc"
   },
   "repository": {
     "type": "git",
