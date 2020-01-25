@@ -1,25 +1,31 @@
 import * as moo from 'moo';
 import { CoreTokenTypes, Token } from './tokens';
 import { Operator } from './operators';
-import simpleDieRoll from './rules/simpleDieRoll';
-import constant from './rules/constant';
 import { Plugins } from './rules/types';
 
+const WHITE_SPACE = 'WHITE_SPACE';
+
+interface LexerRules {
+  [type: string]: string | RegExp;
+}
+
 function createTokenize(plugins: Plugins) {
+  const rules: LexerRules = {
+    [WHITE_SPACE]: /[ \t]+/,
+    [CoreTokenTypes.Operator]: /\*|\/|\+|-/,
+    [CoreTokenTypes.OpenParen]: '(',
+    [CoreTokenTypes.CloseParen]: ')',
+  };
+
+  Object.values(plugins).forEach(plugin => {
+    rules[plugin.typeConstant] = plugin.regex;
+  });
+
+  console.log(rules);
+
   function tokenize(notation: string): Token[] {
-    const WHITE_SPACE = 'WHITE_SPACE';
-
-    const lexer = moo.compile({
-      [WHITE_SPACE]: /[ \t]+/,
-      [CoreTokenTypes.Operator]: /\*|\/|\+|-/,
-      [CoreTokenTypes.OpenParen]: '(',
-      [CoreTokenTypes.CloseParen]: ')',
-      [simpleDieRoll.typeConstant]: simpleDieRoll.regex,
-      [constant.typeConstant]: constant.regex,
-    });
-
+    const lexer = moo.compile(rules);
     lexer.reset(notation);
-
     return Array.from(lexer)
       .filter(token => token.type !== WHITE_SPACE)
       .map(processToken);
