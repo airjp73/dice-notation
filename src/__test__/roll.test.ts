@@ -1,4 +1,4 @@
-import { rollDice } from '../processTokens';
+import { rollDice } from '../calculateFinalResult';
 import roll from '../roll';
 import { diceRollToken } from '../tokens';
 

@@ -4,8 +4,15 @@ import createTallyRolls from './tallyRolls';
 import calculateFinalResult from './calculateFinalResult';
 import createRoll from './roll';
 import createTokenize from './tokenize';
+import simpleDieRoll from './rules/simpleDieRoll';
+import constant from './rules/constant';
 
-function createDiceRoller(plugins: Plugins) {
+export const defaultPlugins = {
+  [simpleDieRoll.typeConstant]: simpleDieRoll,
+  [constant.typeConstant]: constant,
+};
+
+function createDiceRoller(plugins: Plugins = defaultPlugins) {
   const tokenize = createTokenize(plugins);
   const rollDice = createRollDice(plugins);
   const tallyRolls = createTallyRolls(plugins);
