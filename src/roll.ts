@@ -3,8 +3,10 @@ import createRollDice from './rollDice';
 import createTallyRolls, { RollTotal } from './tallyRolls';
 import calculateFinalResult from './calculateFinalResult';
 import createTokenize from './tokenize';
+import { Token } from './tokens';
 
 export interface RollInformation {
+  tokens: Token[];
   rolls: RollResults;
   rollTotals: RollTotal[];
   result: number;
@@ -21,6 +23,7 @@ function createRoll(
     const rollTotals = tallyRolls(tokens, rolls);
     const result = calculateFinalResult(tokens, rollTotals);
     return {
+      tokens,
       rolls,
       rollTotals,
       result,
