@@ -2,14 +2,22 @@
   "name": "@airjp73/dice-notation",
   "version": "1.0.0",
   "description": "A js library for parsing dice notation",
-  "main": "dist/index.js",
+  "module": "dist/module/index.js",
+  "main": "dist/main/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "build": "tsc",
-    "prepublish": "tsc"
+    "build:module": "tsc --target es2017 --outDir dist/module",
+    "build:main": "tsc --target es5 --outDir dist/main",
+    "build": "npm run build:module && npm run build:main",
+    "prepublish": "npm run build"
   },
+  "files": [
+    "dist/**/*",
+    "LICENSE",
+    "README.md"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/airjp73/dice-notation.git"
