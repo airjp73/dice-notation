@@ -8,8 +8,8 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "build:module": "tsc --target es2017 --outDir dist/module",
-    "build:main": "tsc --target es5 --outDir dist/main",
+    "build:module": "tsc --module ESNext --outDir dist/module",
+    "build:main": "tsc --module CommonJS --outDir dist/main",
     "build": "npm run build:module && npm run build:main",
     "prepublish": "npm run build"
   },
