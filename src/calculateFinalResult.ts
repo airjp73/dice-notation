@@ -17,6 +17,20 @@ function doMath(val1: number, operator: Operator, val2: number): number {
   }
 }
 
+function calculateUnaryOperation(operator: Operator, val: number): number {
+  switch (operator) {
+    case '*':
+    case '/':
+      throw new Error(
+        `Operator '${operator}' may not be used as a unary operator`
+      );
+    case '+':
+      return +val;
+    case '-':
+      return -val;
+  }
+}
+
 const isOperator = (stackItem: ValueOrOperatorString): stackItem is Operator =>
   typeof stackItem === 'string';
 const isValue = (stackItem: ValueOrOperatorString): stackItem is number =>
@@ -53,9 +67,19 @@ function calculateFinalResult(tokens: Token[], values: RollTotal[]): number {
       let total = popValue();
 
       while (stack.length) {
-        const operator = popOperator();
-        const value = popValue();
-        total = doMath(value, operator, total);
+        let operator = popOperator();
+
+        while (isOperator(peekTop())) {
+          total = calculateUnaryOperation(operator, total);
+          operator = popOperator();
+        }
+
+        if (isNil(peekTop())) {
+          total = calculateUnaryOperation(operator, total);
+        } else {
+          const value = popValue();
+          total = doMath(value, operator, total);
+        }
       }
 
       stack.push(total);
