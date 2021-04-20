@@ -1,7 +1,7 @@
 import { Plugins, RollResults } from './rules/types';
 import { CoreTokenTypes, Token } from './tokens';
 
-function createRollDice(plugins: Plugins) {
+function createRollDice(plugins: Plugins, random: (min: number, max: number) => number) {
   function rollDice(tokens: Token[]): RollResults {
     return tokens.map(token => {
       switch (token.type) {
@@ -10,7 +10,7 @@ function createRollDice(plugins: Plugins) {
         case CoreTokenTypes.Operator:
           return null;
         case CoreTokenTypes.DiceRoll:
-          return plugins[token.detailType].roll(token.detail);
+          return plugins[token.detailType].roll(token.detail, random);
       }
     });
   }

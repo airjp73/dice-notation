@@ -1,5 +1,4 @@
 import { DiceRule } from './types';
-import random from '../util/random';
 
 export const SIMPLE_DIE_ROLL = '_SimpleDieRoll';
 
@@ -15,7 +14,7 @@ const simpleDieRoll: DiceRule<SimpleDiceRollToken> = {
     const [count, numSides] = raw.split('d').map(num => parseInt(num));
     return { count, numSides };
   },
-  roll: ({ count, numSides }) =>
+  roll: ({ count, numSides }, random) =>
     new Array(count).fill(0).map(() => random(1, numSides)),
   calculateValue: (token, rolls) => rolls.reduce((agg, num) => agg + num, 0),
 };

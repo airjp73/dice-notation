@@ -43,8 +43,6 @@ Let's say we want to add a rule to allow us to use `d%` instead of `d100`. We ca
 
 ```js
 // A convenience function for rolling a dice. You can use something else if you want
-import { random } from '@airjp73/dice-notation';
-
 const myRule = {
   // Regex to pass to the parser
   regex: /\d+d%/,
@@ -59,7 +57,7 @@ const myRule = {
 
   // Takes the data returned from `tokenize` and returns an array of rolls
   // this is so we can see what every individual dice roll was if we want
-  roll: ({ numDice }) => {
+  roll: ({ numDice }, random) => {
     const rolls = [];
     for (let i = 0; i < numDice; i++) {
       rolls.push(random(1, 100));
