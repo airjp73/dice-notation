@@ -57,7 +57,7 @@ const myRule = {
 
   // Takes the data returned from `tokenize` and returns an array of rolls
   // this is so we can see what every individual dice roll was if we want
-  roll: ({ numDice }, random) => {
+  roll: ({ numDice }, { random }) => {
     const rolls = [];
     for (let i = 0; i < numDice; i++) {
       rolls.push(random(1, 100));
