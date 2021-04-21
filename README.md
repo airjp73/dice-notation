@@ -53,7 +53,7 @@ const myRule = {
   // Takes the raw string value of the custom dice roll
   // and returns data about that role -- it can be whatever you want it to be
   // in this case we only care about how many d100s we need to roll
-  tokenize: raw => ({ numDice: parseInt(raw.split('d')[0]) }),
+  tokenize: (raw) => ({ numDice: parseInt(raw.split('d')[0]) }),
 
   // Takes the data returned from `tokenize` and returns an array of rolls
   // this is so we can see what every individual dice roll was if we want
@@ -87,8 +87,8 @@ interface DiceRule<T> {
 Once you've created your custom rule, you need to create new roll methods like so:
 
 ```js
-import { withPlugins } from '@airjp73/dice-notation';
+import { withPlugins, createDiceRoller } from '@airjp73/dice-notation';
 
 // You can use `roll` the same as before, but now your custom rules are injected into it.
-const { roll } = withPlugins(myRule);
+const { roll } = createDiceRoller(withPlugins(myRule));
 ```

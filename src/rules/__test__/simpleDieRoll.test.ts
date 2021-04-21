@@ -13,9 +13,9 @@ describe('simpleDieRoll', () => {
 
   describe('roll', () => {
     it('should return an array with one number for each dice rolled', () => {
-      const rolls = simpleDieRoll.roll({ count: 25, numSides: 6 }, random);
+      const rolls = simpleDieRoll.roll({ count: 25, numSides: 6 }, { random });
       expect(rolls).toHaveLength(25);
-      rolls.forEach(val => {
+      rolls.forEach((val) => {
         expect(val).toBeLessThanOrEqual(6);
         expect(val).toBeGreaterThanOrEqual(1);
       });
