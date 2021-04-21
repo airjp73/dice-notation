@@ -1,3 +1,4 @@
+import { random } from '../../index';
 import simpleDieRoll from '../simpleDieRoll';
 
 describe('simpleDieRoll', () => {
@@ -12,7 +13,7 @@ describe('simpleDieRoll', () => {
 
   describe('roll', () => {
     it('should return an array with one number for each dice rolled', () => {
-      const rolls = simpleDieRoll.roll({ count: 25, numSides: 6 });
+      const rolls = simpleDieRoll.roll({ count: 25, numSides: 6 }, random);
       expect(rolls).toHaveLength(25);
       rolls.forEach(val => {
         expect(val).toBeLessThanOrEqual(6);

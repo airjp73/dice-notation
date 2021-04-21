@@ -4,6 +4,12 @@ export { default as createDiceRoller } from './createDiceRoller';
 export { default as withPlugins } from './withPlugins';
 export { default as random } from './util/random';
 
+export type { DiceRoller } from './createDiceRoller';
+export type { Random } from "./util/random";
+export type { Plugins, DiceRule, Rolls, RollResults } from "./rules/types";
+export type { SimpleDiceRollToken } from "./rules/simpleDieRoll";
+export type { BaseToken, OpenParenToken, CloseParenToken, OperatorToken, DiceRollToken, Token } from "./tokens";
+
 export const {
   tokenize,
   calculateFinalResult,
