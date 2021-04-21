@@ -1,7 +1,8 @@
 import { Plugins, RollResults } from './rules/types';
 import { CoreTokenTypes, Token } from './tokens';
+import { Random } from './util/random';
 
-function createRollDice(plugins: Plugins, random: (min: number, max: number) => number) {
+function createRollDice(plugins: Plugins, random: Random) {
   function rollDice(tokens: Token[]): RollResults {
     return tokens.map(token => {
       switch (token.type) {
