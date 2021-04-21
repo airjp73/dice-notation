@@ -27,4 +27,6 @@ function createDiceRoller(plugins: Plugins = defaultPlugins, random = defaultRan
   };
 }
 
+export type DiceRoller = ReturnType<typeof createDiceRoller>
+
 export default createDiceRoller;
