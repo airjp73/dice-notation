@@ -9,7 +9,7 @@ function withPlugins(...args: any[]): ReturnType<typeof createDiceRoller> {
   let random = defaultRandom
   if (Array.isArray(args[0])) {
     plugins = args[0]
-    random = args[1] ?? defaultRandom
+    random = args[1] || defaultRandom
   } else {
     plugins = args
   }
