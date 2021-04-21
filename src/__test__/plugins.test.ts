@@ -2,6 +2,7 @@ import { DiceRule } from '../rules/types';
 import random from '../util/random';
 import withPlugins from '../withPlugins';
 import { CoreTokenTypes } from '../tokens';
+import { createDiceRoller } from '..';
 
 interface CountSpecificNumberToken {
   count: number;
@@ -12,7 +13,7 @@ interface CountSpecificNumberToken {
 const countSpecificNumberPlugin: DiceRule<CountSpecificNumberToken> = {
   regex: /\d+d\d+t\d+/,
   typeConstant: 'CountRoll',
-  tokenize: raw => {
+  tokenize: (raw) => {
     const [count, rest] = raw.split('d');
     const [numSides, targetNum] = rest.split('t');
     return {
@@ -24,13 +25,14 @@ const countSpecificNumberPlugin: DiceRule<CountSpecificNumberToken> = {
   roll: ({ count, numSides }) =>
     new Array(count).fill(0).map(() => random(1, numSides)),
   calculateValue: (token, rolls) =>
-    rolls.filter(roll => roll === token.targetNum).length,
+    rolls.filter((roll) => roll === token.targetNum).length,
 };
 
 describe('plugins', () => {
   it('should support custom plugins', () => {
     const testRoll = '10d1t1';
-    const { roll, tokenize } = withPlugins(countSpecificNumberPlugin);
+    const plugins = withPlugins(countSpecificNumberPlugin);
+    const { tokenize, roll } = createDiceRoller(plugins);
     const { result, rollTotals, rolls } = roll(testRoll);
     expect(result).toEqual(10);
     expect(rolls).toHaveLength(1);

@@ -17,7 +17,7 @@ function createTokenize(plugins: Plugins) {
     [CoreTokenTypes.CloseParen]: ')',
   };
 
-  Object.values(plugins).forEach(plugin => {
+  Object.values(plugins).forEach((plugin) => {
     rules[plugin.typeConstant] = plugin.regex;
   });
 
@@ -25,7 +25,7 @@ function createTokenize(plugins: Plugins) {
     const lexer = moo.compile(rules);
     lexer.reset(notation);
     return Array.from(lexer)
-      .filter(token => token.type !== WHITE_SPACE)
+      .filter((token) => token.type !== WHITE_SPACE)
       .map(processToken);
   }
 
