@@ -43,7 +43,7 @@ import {
 const tokens = tokenize('2d6 + 3d4');
 
 // Rolls any dice roll tokens and returns all the individual rolls.
-// rolls[i] contains the all rolls for the dice roll at tokens[i]
+// rolls[i] contains all the rolls for the DiceRollToken at tokens[i]
 // Example: [[3, 1], null, [1, 3, 2]]
 const rolls = rollDice(tokens);
 
