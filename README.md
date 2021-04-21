@@ -13,7 +13,7 @@ A flexible and pluggable js library for parsing dice notation. It has:
 npm install --save @airjp73/dice-notation
 ```
 
-## Usage
+## Simple Usage
 
 If all you want to do is parse some dice notation and get the result you can import `roll` and pass in the notation.
 
@@ -25,15 +25,38 @@ const { result } = roll('1d6 + 3');
 
 It is recommended to use an IDE or text editor that can show you the Typescript types for more in-depth documentation.
 
-## Inspecting tokens
+## Inspecting individual rolls
 
-If you want to get more data about the notation (like to do something more interactive with the ui), you can use the `tokenize` function.
+If you want to get the results of individual dice rolls or more info about the notation itself, you can use these functions.
+The `roll` function from the Simple Usage section is essentially just a wrapper for these 4 functions.
 
 ```js
-import { tokenize } from '@airjp73/dice-notation';
+import {
+  tokenize,
+  rollDice,
+  tallyRolls,
+  calculateFinalResult,
+} from '@airjp73/dice-notation';
 
-const tokens = tokenize('1d6 + 3');
+// Gets the tokens from the lexer
+// Example: [DiceRollToken, OperatorToken, DiceRollToken]
+const tokens = tokenize('2d6 + 3d4');
+
+// Rolls any dice roll tokens and returns all the individual rolls.
+// rolls[i] contains the all rolls for the dice roll at tokens[i]
+// Example: [[3, 1], null, [1, 3, 2]]
+const rolls = rollDice(tokens);
+
+// Takes the rolls and totals them
+// Example: [4, null, 6]
+const rollTotals = tallyRolls(tokens, rolls);
+
+// Get the final result of the roll
+// Example: 10
+const result = calculateFinalResult(tokens, rollTotals);
 ```
+
+It's broken up this way to allow as much flexibility as possible for how you want to display the information and what kind of custom dice rules you might want.
 
 ## Custom dice rules
 
@@ -89,6 +112,12 @@ Once you've created your custom rule, you need to create new roll methods like s
 ```js
 import { withPlugins, createDiceRoller } from '@airjp73/dice-notation';
 
-// You can use `roll` the same as before, but now your custom rules are injected into it.
-const { roll } = createDiceRoller(withPlugins(myRule));
+// You can use the same roll functions as before, but now your custom rules are injected into it.
+const {
+  roll,
+  tokenize,
+  rollDice,
+  tallyRolls,
+  calculateFinalResult,
+} = createDiceRoller(withPlugins(myRule));
 ```
