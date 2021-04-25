@@ -126,7 +126,7 @@ export interface RollConfig {
 }
 ```
 
-### Using the Custom rule
+### Using the custom rule
 
 Once you've created your custom rule, you need to create new roll methods like so:
 
@@ -161,7 +161,7 @@ const rollTotals = tallyRolls(tokens, rolls, config);
 const result = calculateFinalResult(tokens, rollTotals);
 ```
 
-### Configuration option
+### Configuration options
 
 #### `random`
 
