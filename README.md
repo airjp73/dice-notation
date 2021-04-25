@@ -62,6 +62,8 @@ It's broken up this way to allow as much flexibility as possible for how you wan
 
 The default `roll` function only supports basic dice notation. If you want to support something more than that, you need a custom dice rule.
 
+### Custom dice rule implementation
+
 Let's say we want to add a rule to allow us to use `d%` instead of `d100`. We can create our rule like this:
 
 ```js
@@ -80,13 +82,8 @@ const myRule = {
 
   // Takes the data returned from `tokenize` and returns an array of rolls
   // this is so we can see what every individual dice roll was if we want
-  roll: ({ numDice }, { random }) => {
-    const rolls = [];
-    for (let i = 0; i < numDice; i++) {
-      rolls.push(random(1, 100));
-    }
-    return rolls;
-  },
+  // Here we're using a helper to auto-generate the rolls (see helper section below)
+  roll: ({ numDice }, { generateRolls }) => generateRolls(numDice, 100),
 
   // Takes the token returned from `tokenize` and the rolls returned from `roll`
   // and returns the total value
@@ -95,17 +92,41 @@ const myRule = {
 };
 ```
 
+### Type definition
+
 The full type definition of a custom rule is:
 
 ```ts
 interface DiceRule<T> {
   regex: RegExp;
   typeConstant: string;
-  tokenize: (raw: string) => T;
-  roll: (token: T) => Rolls;
-  calculateValue: (token: T, rolls: number[]) => number;
+  tokenize: (raw: string, config: RollConfig) => T;
+  roll: (token: T, config: RollConfig) => Rolls;
+  calculateValue: (token: T, rolls: number[], config: RollConfig) => number;
 }
 ```
+
+### RollConfig helpers
+
+As you can see above, there are some useful helpers given to each part of the dice rule.
+
+```ts
+export interface RollConfig {
+  // Generate a random number between `min` and `max` inclusive
+  // `random(1, 6)` would be like rolling 1d6 because it would generate a number between 1 & 6
+  random: (min: number, max: number) => number;
+
+  // Generates `numDice` rolls for dice of size `diceSize`
+  // `generateRolls(3, 6)` would be like rolling 3d6
+  generateRolls: (numDice: number, diceSize: number) => number[];
+
+  // An object that contains any context provided by you
+  // See configuration section below
+  context: Record<string, any>;
+}
+```
+
+### Using the Custom rule
 
 Once you've created your custom rule, you need to create new roll methods like so:
 
@@ -120,4 +141,56 @@ const {
   tallyRolls,
   calculateFinalResult,
 } = createDiceRoller(withPlugins(myRule));
+```
+
+## Configuration
+
+Configuration options can be provided to `createDiceRoller` and/or to individual rolling functions.
+
+```ts
+// Configuration when creating dice roller
+createDiceRoller(withPlugins(myRule), config);
+
+// Configuration when rolling
+roll('1d6', config);
+const tokens = tokenize('1d6', config);
+const rolls = rollDice(tokens, config);
+const rollTotals = tallyRolls(tokens, rolls, config);
+
+// `calculateFinalResult` does not accept configuration
+const result = calculateFinalResult(tokens, rollTotals);
+```
+
+### Configuration option
+
+#### `random`
+
+Can be used to customize the randomization function used by dice rules.
+
+```ts
+const config = {
+  // Contrived `random` function that returns `min` + `max` instead of a random number
+  random: (min, max) => min + max,
+};
+
+// The result here will be `7`
+roll('1d6', config);
+```
+
+#### `context`
+
+Used to provide outside context to custom dice rules.
+
+Example: This could allow you to write a custom rule to allow variables in dice notation.
+The values for each variable can be provided through `context`
+
+```ts
+const config = {
+  context: {
+    myVariable: 5,
+  },
+};
+
+// Result will be `1d6 + 5`
+roll('1d6 + myVariable', config);
 ```
