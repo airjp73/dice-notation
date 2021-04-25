@@ -20,25 +20,25 @@ describe('configuration', () => {
   });
 
   describe('context', () => {
-    const variablePlugin: DiceRule<Record<string, any>> = {
-      regex: /\w+/,
+    const variableRule: DiceRule<{ variableName: string }> = {
+      regex: /[a-zA-Z][a-zA-Z0-9]*/,
       typeConstant: 'Variable',
-      tokenize: (raw, { context }) => {
-        return { val: context[raw] };
+      tokenize: (raw) => ({ variableName: raw }),
+      roll: ({ variableName }, { context }) => {
+        return [context[variableName]];
       },
-      roll: ({ val }) => [val],
-      calculateValue: (token, rolls) => rolls[0],
+      calculateValue: (_, roll) => roll[0],
     };
 
     it('should be able to configure `context`', () => {
       const config = { context: { myVar: 5 } };
-      const { roll } = createDiceRoller(withPlugins(variablePlugin), config);
+      const { roll } = createDiceRoller(withPlugins(variableRule), config);
       expect(roll('myVar').result).toEqual(5);
     });
 
     it('should be able to override `context`', () => {
       const config = { context: { myVar: 5 } };
-      const { roll } = createDiceRoller(withPlugins(variablePlugin), config);
+      const { roll } = createDiceRoller(withPlugins(variableRule), config);
 
       const override = { context: { myVar: 6 } };
       expect(roll('myVar', override).result).toEqual(6);
