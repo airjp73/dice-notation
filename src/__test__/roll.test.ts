@@ -2,47 +2,47 @@ import { rollDice, roll } from '../index';
 import { diceRollToken } from '../tokens';
 
 describe('roll', () => {
-  const cases: [string, number, number, number][] = [
-    ['1d6', 1, 6, 12],
-    ['1d12', 1, 12, 12],
-    ['1d6 + 5', 6, 11, 12],
-    ['4d6', 4, 36, 36],
-    ['1d12 * 2d4 / 2', 1, 48, 200],
-    ['1d4 + 1d4 + 1d4 + 1d4', 4, 16, 24],
-    ['1d4 * (1d4 + 2)', 3, 24, 30],
-    ['1d2', 1, 2, 10],
+  const cases: [string, number, number][] = [
+    ['1d6', 1, 6],
+    ['1d12', 1, 12],
+    ['1d6 + 5', 6, 11],
+    ['4d6', 4, 36],
+    ['1d12 * 2d4 / 2', 1, 48],
+    ['1d4 + 1d4 + 1d4 + 1d4', 4, 16],
+    ['1d4 * (1d4 + 2)', 3, 24],
+    ['1d2', 1, 2],
 
     // Constants to truly verify operator precedence
-    ['2 + 3 * (4 + 2)', 20, 20, 1],
-    ['2*2', 4, 4, 1],
-    ['4*4 + 4 / 2 -10', 8, 8, 1],
-    ['(2 + 2) * (3 * (3 - 1)) - (3 + 1)', 20, 20, 1],
-    ['64 * (0-3) - 4008 / 5 + (0-328)', -1321.6, -1321.6, 1],
-    ['2', 2, 2, 1],
+    ['2 + 3 * (4 + 2)', 20, 20],
+    ['2*2', 4, 4],
+    ['4*4 + 4 / 2 -10', 8, 8],
+    ['(2 + 2) * (3 * (3 - 1)) - (3 + 1)', 20, 20],
+    ['64 * (0-3) - 4008 / 5 + (0-328)', -1321.6, -1321.6],
+    ['2', 2, 2],
 
     // Support for unary operators
-    ['2 + -2', 0, 0, 1],
-    ['-2 + 2', 0, 0, 1],
-    ['+2 + 2', 4, 4, 1],
-    ['-2 + -2', -4, -4, 1],
-    ['2 * -2', -4, -4, 1],
-    ['-2 * -2', 4, 4, 1],
-    ['+2 / -2', -1, -1, 1],
-    ['------2', 2, 2, 1],
-    ['2 + ------2', 4, 4, 1],
-    ['++++++2 + ------2', 4, 4, 1],
-    ['-1d6 + -2d4', -14, -3, 20],
-    ['+1d6 + +2d4', 3, 14, 20],
-    ['+1d6 - +2d4', -7, 4, 20],
-    ['-(1d6 + -6) - +(4 + 5)', -9, -4, 20],
+    ['2 + -2', 0, 0],
+    ['-2 + 2', 0, 0],
+    ['+2 + 2', 4, 4],
+    ['-2 + -2', -4, -4],
+    ['2 * -2', -4, -4],
+    ['-2 * -2', 4, 4],
+    ['+2 / -2', -1, -1],
+    ['------2', 2, 2],
+    ['2 + ------2', 4, 4],
+    ['++++++2 + ------2', 4, 4],
+    ['-1d6 + -2d4', -14, -3],
+    ['+1d6 + +2d4', 3, 14],
+    ['+1d6 - +2d4', -7, 4],
+    ['-(1d6 + -6) - +(4 + 5)', -9, -4],
   ];
 
-  it.each(cases)('should correctly roll %s', (notation, min, max, repeats) => {
-    for (let i = 0; i < repeats; i++) {
-      const { result } = roll(notation);
-      expect(result).toBeLessThanOrEqual(max);
-      expect(result).toBeGreaterThanOrEqual(min);
-    }
+  const minConfig = { random: (min: number) => min };
+  const maxConfig = { random: (min: number, max: number) => max };
+
+  it.each(cases)('should correctly roll %s', (notation, min, max) => {
+    expect(roll(notation, maxConfig).result).toBeLessThanOrEqual(max);
+    expect(roll(notation, minConfig).result).toBeGreaterThanOrEqual(min);
   });
 
   const errorCases: [string, string][] = [
