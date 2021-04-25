@@ -1,11 +1,17 @@
 import { Plugins, RollResults } from './rules/types';
 import { Token, CoreTokenTypes } from './tokens';
 import isNil from './util/isNill';
+import { getFinalRollConfig, RollConfigOptions } from './util/rollConfig';
 
 export type RollTotal = number | null;
 
-function createTallyRolls(plugins: Plugins) {
-  function tallyRolls(tokens: Token[], rolls: RollResults): RollTotal[] {
+function createTallyRolls(plugins: Plugins, config: RollConfigOptions) {
+  function tallyRolls(
+    tokens: Token[],
+    rolls: RollResults,
+    configOverrides?: Partial<RollConfigOptions>
+  ): RollTotal[] {
+    const finalConfig = getFinalRollConfig(config, configOverrides);
     return tokens.map((token, index) => {
       switch (token.type) {
         case CoreTokenTypes.CloseParen:
@@ -24,7 +30,8 @@ function createTallyRolls(plugins: Plugins) {
             );
           return plugins[token.detailType].calculateValue(
             token.detail,
-            rollsForToken
+            rollsForToken,
+            finalConfig
           );
       }
     });

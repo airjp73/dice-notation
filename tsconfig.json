@@ -3,7 +3,7 @@
     "declaration": true,
     "declarationDir": "./dist",
     "outDir": "./dist",
-    "target": "esnext",
+    "target": "es5",
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,

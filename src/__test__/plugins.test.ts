@@ -22,8 +22,8 @@ const countSpecificNumberPlugin: DiceRule<CountSpecificNumberToken> = {
       targetNum: parseInt(targetNum),
     };
   },
-  roll: ({ count, numSides }) =>
-    new Array(count).fill(0).map(() => random(1, numSides)),
+  roll: ({ count, numSides }, { generateRolls }) =>
+    generateRolls(count, numSides),
   calculateValue: (token, rolls) =>
     rolls.filter((roll) => roll === token.targetNum).length,
 };

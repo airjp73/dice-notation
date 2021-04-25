@@ -6,8 +6,11 @@ import createRoll from './roll';
 import createTokenize from './tokenize';
 import simpleDieRoll from './rules/simpleDieRoll';
 import constant from './rules/constant';
-import defaultRandom from './util/random';
-import type { Random } from './util/random';
+import {
+  getDefaultRollConfigOptions,
+  RollConfig,
+  RollConfigOptions,
+} from './util/rollConfig';
 
 export const defaultPlugins = {
   [simpleDieRoll.typeConstant]: simpleDieRoll,
@@ -16,18 +19,19 @@ export const defaultPlugins = {
 
 function createDiceRoller(
   plugins: Plugins = defaultPlugins,
-  { random = defaultRandom }: { random?: Random } = {}
+  configOverrides: Partial<RollConfigOptions> = {}
 ) {
-  const tokenize = createTokenize(plugins);
-  const rollDice = createRollDice(plugins, { random });
-  const tallyRolls = createTallyRolls(plugins);
+  const rollConfig = getDefaultRollConfigOptions(configOverrides);
+  const tokenize = createTokenize(plugins, rollConfig);
+  const rollDice = createRollDice(plugins, rollConfig);
+  const tallyRolls = createTallyRolls(plugins, rollConfig);
 
   return {
     tokenize,
     calculateFinalResult,
     rollDice,
     tallyRolls,
-    roll: createRoll(tokenize, rollDice, tallyRolls),
+    roll: createRoll(tokenize, rollDice, tallyRolls, rollConfig),
   };
 }
 

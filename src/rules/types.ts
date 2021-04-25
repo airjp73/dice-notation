@@ -1,4 +1,4 @@
-import type { Random } from '../util/random';
+import type { RollConfig } from '../util/rollConfig';
 
 export interface Plugins {
   [key: string]: DiceRule<any>;
@@ -7,9 +7,9 @@ export interface Plugins {
 export interface DiceRule<T> {
   regex: RegExp;
   typeConstant: string;
-  tokenize: (raw: string) => T;
-  roll: (token: T, opts: { random: Random }) => Rolls;
-  calculateValue: (token: T, rolls: number[]) => number;
+  tokenize: (raw: string, config: RollConfig) => T;
+  roll: (token: T, config: RollConfig) => Rolls;
+  calculateValue: (token: T, rolls: number[], config: RollConfig) => number;
 }
 
 export type Rolls = number[];
