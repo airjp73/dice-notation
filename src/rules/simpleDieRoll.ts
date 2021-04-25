@@ -14,8 +14,8 @@ const simpleDieRoll: DiceRule<SimpleDiceRollToken> = {
     const [count, numSides] = raw.split('d').map((num) => parseInt(num));
     return { count, numSides };
   },
-  roll: ({ count, numSides }, { random }) =>
-    new Array(count).fill(0).map(() => random(1, numSides)),
+  roll: ({ count, numSides }, { generateRolls }) =>
+    generateRolls(count, numSides),
   calculateValue: (token, rolls) => rolls.reduce((agg, num) => agg + num, 0),
 };
 

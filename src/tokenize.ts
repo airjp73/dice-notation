@@ -2,6 +2,11 @@ import * as moo from 'moo';
 import { CoreTokenTypes, Token } from './tokens';
 import { Operator } from './operators';
 import { Plugins } from './rules/types';
+import {
+  getFinalRollConfig,
+  RollConfig,
+  RollConfigOptions,
+} from './util/rollConfig';
 
 const WHITE_SPACE = 'WHITE_SPACE';
 
@@ -9,7 +14,7 @@ interface LexerRules {
   [type: string]: string | RegExp;
 }
 
-function createTokenize(plugins: Plugins) {
+function createTokenize(plugins: Plugins, rollConfig: RollConfigOptions) {
   const rules: LexerRules = {
     [WHITE_SPACE]: /[ \t]+/,
     [CoreTokenTypes.Operator]: /\*|\/|\+|-/,
@@ -21,19 +26,23 @@ function createTokenize(plugins: Plugins) {
     rules[plugin.typeConstant] = plugin.regex;
   });
 
-  function tokenize(notation: string): Token[] {
+  function tokenize(
+    notation: string,
+    configOverrides?: Partial<RollConfigOptions>
+  ): Token[] {
+    const finalConfig = getFinalRollConfig(rollConfig, configOverrides);
     const lexer = moo.compile(rules);
     lexer.reset(notation);
     return Array.from(lexer)
       .filter((token) => token.type !== WHITE_SPACE)
-      .map(processToken);
+      .map((token) => processToken(token, finalConfig));
   }
 
   /**
    * Take a moo token and turn it into a dice-notation token.
    * @param token the moo token
    */
-  function processToken(token: moo.Token): Token {
+  function processToken(token: moo.Token, config: RollConfig): Token {
     if (!token.type) throw new Error('Unrecognized token');
 
     switch (token.type) {
@@ -64,7 +73,7 @@ function createTokenize(plugins: Plugins) {
           content: token.value,
           position: token.col - 1,
           detailType: rule.typeConstant,
-          detail: rule.tokenize(token.value),
+          detail: rule.tokenize(token.value, config),
         };
     }
   }
