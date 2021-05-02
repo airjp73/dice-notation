@@ -1,5 +1,5 @@
 import * as moo from 'moo';
-import { CoreTokenTypes, Token } from './tokens';
+import { CoreTokenTypes, ErrorToken, Token } from './tokens';
 import { Operator } from './operators';
 import { Plugins } from './rules/types';
 import {
@@ -14,7 +14,20 @@ interface LexerRules {
   [type: string]: string | RegExp;
 }
 
-function createTokenize(plugins: Plugins, rollConfig: RollConfigOptions) {
+export type Tokenize = (
+  notation: string,
+  configOverrides?: Partial<RollConfigOptions>
+) => Token[];
+
+export type TokenizeFaultTolerant = (
+  notation: string,
+  configOverrides?: Partial<RollConfigOptions>
+) => { tokens: Token[]; error: ErrorToken | null };
+
+function createTokenize(
+  plugins: Plugins,
+  rollConfig: RollConfigOptions
+): { tokenize: Tokenize; tokenizeFaultTolerant: TokenizeFaultTolerant } {
   const rules: LexerRules = {
     [WHITE_SPACE]: /[ \t]+/,
     [CoreTokenTypes.Operator]: /\*|\/|\+|-/,
@@ -26,16 +39,45 @@ function createTokenize(plugins: Plugins, rollConfig: RollConfigOptions) {
     rules[plugin.typeConstant] = plugin.regex;
   });
 
+  const lexer = moo.compile(rules);
+  const faultTolerantLexer = moo.compile({
+    ...rules,
+    error: moo.error,
+  });
+
   function tokenize(
     notation: string,
     configOverrides?: Partial<RollConfigOptions>
   ): Token[] {
     const finalConfig = getFinalRollConfig(rollConfig, configOverrides);
-    const lexer = moo.compile(rules);
     lexer.reset(notation);
     return Array.from(lexer)
       .filter((token) => token.type !== WHITE_SPACE)
       .map((token) => processToken(token, finalConfig));
+  }
+
+  function tokenizeFaultTolerant(
+    notation: string,
+    configOverrides?: Partial<RollConfigOptions>
+  ): { tokens: Token[]; error: ErrorToken | null } {
+    const finalConfig = getFinalRollConfig(rollConfig, configOverrides);
+    faultTolerantLexer.reset(notation);
+    const allTokens = Array.from(faultTolerantLexer);
+    const tokens = allTokens
+      .filter(
+        (token) => token.type && ![WHITE_SPACE, 'error'].includes(token.type)
+      )
+      .map((token) => processToken(token, finalConfig));
+    const lastToken = allTokens[allTokens.length - 1];
+    const error =
+      lastToken?.type === 'error'
+        ? ({
+            type: 'error',
+            position: lastToken.col - 1,
+            content: lastToken.text,
+          } as ErrorToken)
+        : null;
+    return { tokens, error };
   }
 
   /**
@@ -78,7 +120,7 @@ function createTokenize(plugins: Plugins, rollConfig: RollConfigOptions) {
     }
   }
 
-  return tokenize;
+  return { tokenize, tokenizeFaultTolerant };
 }
 
 export default createTokenize;

@@ -22,12 +22,16 @@ function createDiceRoller(
   configOverrides: Partial<RollConfigOptions> = {}
 ) {
   const rollConfig = getDefaultRollConfigOptions(configOverrides);
-  const tokenize = createTokenize(plugins, rollConfig);
+  const { tokenize, tokenizeFaultTolerant } = createTokenize(
+    plugins,
+    rollConfig
+  );
   const rollDice = createRollDice(plugins, rollConfig);
   const tallyRolls = createTallyRolls(plugins, rollConfig);
 
   return {
     tokenize,
+    tokenizeFaultTolerant,
     calculateFinalResult,
     rollDice,
     tallyRolls,

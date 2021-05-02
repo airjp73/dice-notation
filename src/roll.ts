@@ -2,7 +2,7 @@ import { RollResults } from './rules/types';
 import createRollDice from './rollDice';
 import createTallyRolls, { RollTotal } from './tallyRolls';
 import calculateFinalResult from './calculateFinalResult';
-import createTokenize from './tokenize';
+import createTokenize, { Tokenize } from './tokenize';
 import { Token } from './tokens';
 import { RollConfigOptions, getFinalRollConfig } from './util/rollConfig';
 
@@ -14,7 +14,7 @@ export interface RollInformation {
 }
 
 function createRoll(
-  tokenize: ReturnType<typeof createTokenize>,
+  tokenize: Tokenize,
   rollDice: ReturnType<typeof createRollDice>,
   tallyRolls: ReturnType<typeof createTallyRolls>,
   rollConfig: RollConfigOptions
