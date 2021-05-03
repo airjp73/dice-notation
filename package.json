@@ -1,6 +1,6 @@
 {
   "name": "@airjp73/dice-notation",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "A js library for parsing dice notation",
   "module": "dist/module/index.js",
   "main": "dist/main/index.js",
