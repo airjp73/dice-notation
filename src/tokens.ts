@@ -34,6 +34,12 @@ export interface DiceRollToken<T = any> extends BaseToken {
   detail: T;
 }
 
+export interface ErrorToken {
+  type: 'error';
+  position: number;
+  content: string;
+}
+
 export type Token =
   | OpenParenToken
   | CloseParenToken
@@ -93,4 +99,10 @@ export const constantToken = (
   content,
   detailType: CONSTANT,
   detail: value,
+});
+
+export const errorToken = (position: number, content: string): ErrorToken => ({
+  type: 'error',
+  position,
+  content,
 });

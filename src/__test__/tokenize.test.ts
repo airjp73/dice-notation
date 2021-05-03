@@ -5,8 +5,10 @@ import {
   constantToken,
   openParenToken,
   closeParenToken,
+  errorToken,
+  ErrorToken,
 } from '../tokens';
-import { tokenize } from '../index';
+import { tokenize, tokenizeFaultTolerant } from '../index';
 
 describe('tokenizer', () => {
   const cases: [string, string, Token[]][] = [
@@ -129,6 +131,38 @@ describe('tokenizer', () => {
     'should correctly tokenize %s',
     (description, notation, result) => {
       expect(tokenize(notation)).toStrictEqual(result);
+    }
+  );
+
+  const faultTolerantCases: [string, Token[], ErrorToken][] = [
+    [
+      '1d6 + 2r',
+      [
+        diceRollToken(1, 6, 0, '1d6'),
+        operatorToken('+', 4, '+'),
+        constantToken(2, 6, '2'),
+      ],
+      errorToken(7, 'r'),
+    ],
+    ['df', [], errorToken(0, 'df')],
+    ['bobs + 1d6', [], errorToken(0, 'bobs + 1d6')],
+    [
+      '2d4 + -(1d4)asdf',
+      [
+        diceRollToken(2, 4, 0, '2d4'),
+        operatorToken('+', 4, '+'),
+        operatorToken('-', 6, '-'),
+        openParenToken(7, '('),
+        diceRollToken(1, 4, 8, '1d4'),
+        closeParenToken(11, ')'),
+      ],
+      errorToken(12, 'asdf'),
+    ],
+  ];
+  it.each(faultTolerantCases)(
+    'should correctly handle error case: %s',
+    (notation, tokens, error) => {
+      expect(tokenizeFaultTolerant(notation)).toStrictEqual({ tokens, error });
     }
   );
 });

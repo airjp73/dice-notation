@@ -15,10 +15,12 @@ export type {
   OperatorToken,
   DiceRollToken,
   Token,
+  ErrorToken,
 } from './tokens';
 
 export const {
   tokenize,
+  tokenizeFaultTolerant,
   calculateFinalResult,
   rollDice,
   tallyRolls,
