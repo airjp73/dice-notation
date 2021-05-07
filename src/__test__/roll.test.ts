@@ -11,6 +11,7 @@ describe('roll', () => {
     ['1d4 + 1d4 + 1d4 + 1d4', 4, 16],
     ['1d4 * (1d4 + 2)', 3, 24],
     ['1d2', 1, 2],
+    ['100000d6', 100000, 600000],
 
     // Constants to truly verify operator precedence
     ['2 + 3 * (4 + 2)', 20, 20],
@@ -48,6 +49,7 @@ describe('roll', () => {
   const errorCases: [string, string][] = [
     ['2 + *3', "Operator '*' may not be used as a unary operator"],
     ['2 + /3', "Operator '/' may not be used as a unary operator"],
+    ['100001d100', 'Cannot roll more than 100000 dice'],
   ];
 
   it.each(errorCases)('should correctly error on %s', (notation, error) => {

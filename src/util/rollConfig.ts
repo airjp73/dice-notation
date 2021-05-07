@@ -1,5 +1,5 @@
 import createGenerateRolls from './generateRolls';
-import random, { Random } from './random';
+import defaultRandom, { Random } from './random';
 
 export interface RollConfig {
   random: Random;
@@ -10,17 +10,36 @@ export interface RollConfig {
 export interface RollConfigOptions {
   random: Random;
   context: Record<string, any>;
+  maxRandomRolls: number | 'unlimited_rolls_not_recommended';
 }
 
 export const getDefaultRollConfigOptions = (
   helpers: Partial<RollConfigOptions> = {}
 ): RollConfigOptions => {
-  const configuredRandom = helpers.random ?? random;
-  const configuredContext = helpers.context ?? {};
-
+  const {
+    random = defaultRandom,
+    context = {},
+    maxRandomRolls = 100_000,
+  } = helpers;
   return {
-    random: configuredRandom,
-    context: configuredContext,
+    random,
+    context,
+    maxRandomRolls,
+  };
+};
+
+const wrapRandomToPreventCrashes = (config: RollConfigOptions): Random => {
+  const { maxRandomRolls, random } = config;
+
+  // Don't wrap if limitation is disabled
+  if (maxRandomRolls === 'unlimited_rolls_not_recommended') return random;
+
+  let rollCount = 0;
+  return (min, max) => {
+    rollCount++;
+    if (rollCount > maxRandomRolls)
+      throw new Error(`Cannot roll more than ${maxRandomRolls} dice`);
+    return random(min, max);
   };
 };
 
@@ -34,6 +53,7 @@ export const getFinalRollConfig = (
   };
   return {
     ...finalConfig,
+    random: wrapRandomToPreventCrashes(finalConfig),
     generateRolls: createGenerateRolls(finalConfig.random),
   };
 };
