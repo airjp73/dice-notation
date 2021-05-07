@@ -194,3 +194,26 @@ const config = {
 // Result will be `1d6 + 5`
 roll('1d6 + myVariable', config);
 ```
+
+#### `maxRandomRolls`
+
+By default, the dice roller will throw an error if it rolls more than 100,000 dice.
+Rolling too many dice can result in browser or server crashes, so it's not recommended to tweak this setting.
+This setting is not intended as validation, simply as crash-prevention.
+
+If 100,000 is too few dice, this can be changed with this setting:
+
+```ts
+const config = {
+  maxRandomRolls: 1_000_000,
+};
+```
+
+If you _really_ want to disable the limit entirely (this is probably a bad idea),
+you can turn it off like this:
+
+```ts
+const config = {
+  maxRandomRolls: 'unlimited_rolls_not_recommended',
+};
+```
