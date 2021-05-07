@@ -198,7 +198,7 @@ roll('1d6 + myVariable', config);
 #### `maxRandomRolls`
 
 By default, the dice roller will throw an error if it rolls more than 100,000 dice.
-Rolling too many dice can result in browser or server crashes, so it's not recommended to tweak this setting.
+If you tweak this setting, be aware that rolling too many dice can result in browser or server crashes.
 This setting is not intended as validation, simply as crash-prevention.
 
 If 100,000 is too few dice, this can be changed with this setting:
