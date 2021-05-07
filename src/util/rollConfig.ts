@@ -38,7 +38,7 @@ const wrapRandomToPreventCrashes = (config: RollConfigOptions): Random => {
   return (min, max) => {
     rollCount++;
     if (rollCount > maxRandomRolls)
-      throw new Error('Cannot roll more than 100000 dice');
+      throw new Error(`Cannot roll more than ${maxRandomRolls} dice`);
     return random(min, max);
   };
 };
