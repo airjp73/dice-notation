@@ -8,7 +8,7 @@ const customRoller = createDiceRoller();
 
 const manualRoll = (
   notation: string,
-  config: Partial<RollConfigOptions>
+  config?: Partial<RollConfigOptions>
 ): number => {
   const tokens = tokenize(notation, config);
   const rolls = rollDice(tokens, config);
