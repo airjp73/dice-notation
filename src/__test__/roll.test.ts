@@ -1,5 +1,16 @@
-import { rollDice, roll } from '../index';
+import calculateFinalResult from '../calculateFinalResult';
+import createDiceRoller from '../createDiceRoller';
+import { rollDice, roll, tokenize, tallyRolls } from '../index';
 import { diceRollToken } from '../tokens';
+
+const customRoller = createDiceRoller();
+
+const manualRoll: typeof roll = (notation, config) => {
+  const tokens = tokenize(notation, config);
+  const rolls = rollDice(tokens, config);
+  const tallies = tallyRolls(tokens, rolls, config);
+  return calculateFinalResult(tokens, tallies);
+};
 
 describe('roll', () => {
   const cases: [string, number, number][] = [
@@ -44,6 +55,15 @@ describe('roll', () => {
   it.each(cases)('should correctly roll %s', (notation, min, max) => {
     expect(roll(notation, maxConfig).result).toBeLessThanOrEqual(max);
     expect(roll(notation, minConfig).result).toBeGreaterThanOrEqual(min);
+    expect(manualRoll(notation, maxConfig)).toBeLessThanOrEqual(max);
+    expect(manualRoll(notation, minConfig)).toBeGreaterThanOrEqual(min);
+
+    expect(customRoller.roll(notation, maxConfig).result).toBeLessThanOrEqual(
+      max
+    );
+    expect(
+      customRoller.roll(notation, minConfig).result
+    ).toBeGreaterThanOrEqual(min);
   });
 
   const errorCases: [string, string][] = [
@@ -54,6 +74,8 @@ describe('roll', () => {
 
   it.each(errorCases)('should correctly error on %s', (notation, error) => {
     expect(() => roll(notation)).toThrowError(error);
+    expect(() => customRoller.roll(notation)).toThrowError(error);
+    expect(() => manualRoll(notation)).toThrowError(error);
   });
 });
 

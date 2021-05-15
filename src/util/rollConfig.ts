@@ -51,9 +51,10 @@ export const getFinalRollConfig = (
     ...config,
     ...overrides,
   };
+  const random = wrapRandomToPreventCrashes(finalConfig);
   return {
     ...finalConfig,
-    random: wrapRandomToPreventCrashes(finalConfig),
-    generateRolls: createGenerateRolls(finalConfig.random),
+    random,
+    generateRolls: createGenerateRolls(random),
   };
 };

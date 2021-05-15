@@ -2,7 +2,7 @@ import { RollResults } from './rules/types';
 import createRollDice from './rollDice';
 import createTallyRolls, { RollTotal } from './tallyRolls';
 import calculateFinalResult from './calculateFinalResult';
-import createTokenize, { Tokenize } from './tokenize';
+import { Tokenize } from './tokenize';
 import { Token } from './tokens';
 import { RollConfigOptions, getFinalRollConfig } from './util/rollConfig';
 
@@ -23,10 +23,10 @@ function createRoll(
     notation: string,
     configOverrides?: Partial<RollConfigOptions>
   ): RollInformation {
-    const finalConfig = getFinalRollConfig(rollConfig, configOverrides);
-    const tokens = tokenize(notation, finalConfig);
-    const rolls = rollDice(tokens, finalConfig);
-    const rollTotals = tallyRolls(tokens, rolls, finalConfig);
+    const finalOverrides = { ...rollConfig, ...configOverrides };
+    const tokens = tokenize(notation, finalOverrides);
+    const rolls = rollDice(tokens, finalOverrides);
+    const rollTotals = tallyRolls(tokens, rolls, finalOverrides);
     const result = calculateFinalResult(tokens, rollTotals);
     return {
       tokens,
