@@ -2,10 +2,14 @@ import calculateFinalResult from '../calculateFinalResult';
 import createDiceRoller from '../createDiceRoller';
 import { rollDice, roll, tokenize, tallyRolls } from '../index';
 import { diceRollToken } from '../tokens';
+import { RollConfigOptions } from '../util/rollConfig';
 
 const customRoller = createDiceRoller();
 
-const manualRoll: typeof roll = (notation, config) => {
+const manualRoll = (
+  notation: string,
+  config: Partial<RollConfigOptions>
+): number => {
   const tokens = tokenize(notation, config);
   const rolls = rollDice(tokens, config);
   const tallies = tallyRolls(tokens, rolls, config);
